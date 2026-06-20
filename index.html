@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>📊 Pro Paper Trade · Alpaca</title>
+    <style>
+        /* ===== THEMES ===== */
+        :root {
+            --bg-primary: #0b0e14;
+            --bg-secondary: #141a24;
+            --bg-card: #111822;
+            --bg-panel: #10161f;
+            --bg-input: #1e2633;
+            --bg-tab: #10161f;
+            --border-color: #29323f;
+            --border-light: #2a3340;
+            --text-primary: #eef2f6;
+            --text-secondary: #8896aa;
+            --text-muted: #5e6f86;
+            --text-bright: #f0f4fa;
+            --color-positive: #62c792;
+            --color-negative: #f7a1a1;
+            --color-accent: #5b8def;
+            --color-sl: #f7a1a1;
+            --color-tp: #8bcb9e;
+            --shadow-color: rgba(0,0,0,0.7);
+            --badge-bg: #202a38;
+            --hover-bg: #2a3445;
+            --chart-grid: #1f2837;
+            --chart-line: #5b8def;
+            --chart-fill: rgba(91, 141, 239, 0.1);
+            --alert-bg: #1f2a2a;
+            --alert-border: #2b6b47;
+            --alert-text: #7be0a0;
+            --warning-bg: #2a261f;
+            --warning-border: #6b5a2b;
+            --warning-text: #e0c97b;
+            --btn-bg: #293442;
+            --btn-border: #384555;
+            --btn-text: #d3def0;
+            --btn-shadow: #0b0f16;
+            --btn-long-bg: #1f6d4b;
+            --btn-long-border: #2d8b62;
+            --btn-long-shadow: #0f3d2b;
+            --btn-short-bg: #9e3a4a;
+            --btn-short-border: #c04a5e;
+            --btn-short-shadow: #5f232d;
+            --btn-danger-bg: #2f2028;
+            --btn-danger-border: #4d2e38;
+            --btn-danger-text: #e8b4b4;
+            --btn-danger-shadow: #1a1116;
+            --stat-bg: #10161f;
+            --stat-border: #29323f;
+            --history-bg: #111822;
+            --history-border: #29323f;
+            --footer-border: #202a38;
+            --footer-text: #435161;
+            --scrollbar-track: #141a24;
+            --scrollbar-thumb: #29323f;
+            --modal-overlay: rgba(0,0,0,0.7);
+            --modal-bg: #1a1a2e;
+            --modal-text: #eef2f6;
+            --modal-border: #2a3340;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #f8f9fa;
+            --bg-panel: #f0f2f5;
+            --bg-input: #ffffff;
+            --bg-tab: #e8eaed;
+            --border-color: #d0d4d9;
+            --border-light: #c5c9ce;
+            --text-primary: #1a1a2e;
+            --text-secondary: #5a6a7a;
+            --text-muted: #8a9aae;
+            --text-bright: #1a1a2e;
+            --color-positive: #2d8b62;
+            --color-negative: #c04a5e;
+            --color-accent: #4a7adf;
+            --color-sl: #c04a5e;
+            --color-tp: #2d8b62;
+            --shadow-color: rgba(0,0,0,0.15);
+            --badge-bg: #e8eaed;
+            --hover-bg: #d5d8dd;
+            --chart-grid: #d0d4d9;
+            --chart-line: #4a7adf;
+            --chart-fill: rgba(74, 122, 223, 0.1);
+            --alert-bg: #e6f5ed;
+            --alert-border: #2d8b62;
+            --alert-text: #1a5a3a;
+            --warning-bg: #f5f0e6;
+            --warning-border: #8a7a3a;
+            --warning-text: #6a5a2a;
+            --btn-bg: #e8eaed;
+            --btn-border: #c5c9ce;
+            --btn-text: #1a1a2e;
+            --btn-shadow: #c5c9ce;
+            --btn-long-bg: #2d8b62;
+            --btn-long-border: #1a6a4a;
+            --btn-long-shadow: #1a5a3a;
+            --btn-short-bg: #c04a5e;
+            --btn-short-border: #a03a4a;
+            --btn-short-shadow: #7a2a3a;
+            --btn-danger-bg: #f0d0d0;
+            --btn-danger-border: #c04a5e;
+            --btn-danger-text: #8a2a3a;
+            --btn-danger-shadow: #c5a0a0;
+            --stat-bg: #f8f9fa;
+            --stat-border: #d0d4d9;
+            --history-bg: #f8f9fa;
+            --history-border: #d0d4d9;
+            --footer-border: #d0d4d9;
+            --footer-text: #8a9aae;
+            --scrollbar-track: #f0f2f5;
+            --scrollbar-thumb: #d0d4d9;
+            --modal-overlay: rgba(0,0,0,0.5);
+            --modal-bg: #ffffff;
+            --modal-text: #1a1a2e;
+            --modal-border: #d0d4d9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 12px 8px 40px;
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); }
+
+        .app {
+            max-width: 420px;
+            width: 100%;
+            background: var(--bg-secondary);
+            padding: 20px 16px 28px;
+            box-shadow: 0 12px 30px var(--shadow-color);
+            border: 1px solid var(--border-light);
+            border-radius: 0 !important;
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .theme-toggle {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 2px 10px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.15s;
+            line-height: 1.6;
+        }
+        .theme-toggle:active { transform: scale(0.95); }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin: 12px 0 16px;
+            background: var(--bg-tab);
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 10px 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .tab-btn.active {
+            background: var(--badge-bg);
+            color: var(--text-primary);
+        }
+        .tab-btn:active { background: var(--hover-bg); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            transition: color 0.3s, border-color 0.3s;
+            margin-bottom: 6px;
+        }
+        h1 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-left: auto;
+            background: var(--badge-bg);
+            padding: 4px 12px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            padding: 6px 4px 10px 4px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            flex-wrap: nowrap;
+            gap: 4px;
+            transition: color 0.3s, border-color 0.3s;
+            overflow-x: auto;
+        }
+        .header-row .item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .header-row .item .label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        .live-indicator {
+            background: #1f3a2a;
+            color: #7be0a0;
+            padding: 1px 8px;
+            font-weight: 500;
+            font-size: 0.6rem;
+            border: 1px solid #2b6b47;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .live-indicator.offline {
+            background: #3a1f1f;
+            color: #f7a1a1;
+            border-color: #6b2b2b;
+        }
+        [data-theme="light"] .live-indicator {
+            background: #e6f5ed;
+            color: #1a5a3a;
+            border-color: #2d8b62;
+        }
+        [data-theme="light"] .live-indicator.offline {
+            background: #f5e6e6;
+            color: #8a2a2a;
+            border-color: #c04a5e;
+        }
+        .auto-saved-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        .api-status {
+            font-size: 0.55rem;
+            padding: 1px 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            transition: background 0.3s, border-color 0.3s, color 0.3s;
+        }
+        .api-status.online { color: var(--color-positive); border-color: var(--color-positive); }
+        .api-status.offline { color: var(--color-negative); border-color: var(--color-negative); }
+        .api-status.partial { color: var(--warning-text); border-color: var(--warning-border); }
+        .api-calls {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+        }
+        .refresh-btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            padding: 1px 10px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: background 0.15s, color 0.3s, border-color 0.3s;
+            line-height: 1.6;
+        }
+        .refresh-btn:active { background: var(--hover-bg); transform: scale(0.96); }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .trade-panel {
+            background: var(--bg-panel);
+            padding: 16px 14px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 84px 1fr auto;
+            align-items: center;
+            gap: 6px 10px;
+            margin-bottom: 12px;
+        }
+        .row label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+        .row input, .row textarea {
+            grid-column: 2;
+            min-width: 70px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            outline: none;
+            font-weight: 500;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+            font-family: inherit;
+        }
+        .row textarea {
+            min-height: 50px;
+            resize: vertical;
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+        .row input:focus, .row textarea:focus {
+            border-color: var(--color-accent);
+            background: var(--bg-input);
+            box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.2);
+        }
+        .row input::placeholder, .row textarea::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+            opacity: 0.7;
+        }
+        .row .hint {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-left: 4px;
+            transition: color 0.3s;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0 6px;
+        }
+        .btn {
+            flex: 1;
+            border: none;
+            background: var(--btn-bg);
+            padding: 12px 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--btn-text);
+            letter-spacing: 0.3px;
+            transition: all 0.15s;
+            box-shadow: 0 4px 0 var(--btn-shadow);
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid var(--btn-border);
+        }
+        .btn-long { background: var(--btn-long-bg); border-color: var(--btn-long-border); color: white; box-shadow: 0 4px 0 var(--btn-long-shadow); }
+        .btn-short { background: var(--btn-short-bg); border-color: var(--btn-short-border); color: white; box-shadow: 0 4px 0 var(--btn-short-shadow); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--btn-shadow); }
+        .btn-long:active { box-shadow: 0 1px 0 var(--btn-long-shadow); }
+        .btn-short:active { box-shadow: 0 1px 0 var(--btn-short-shadow); }
+        .btn-clear {
+            background: var(--btn-danger-bg);
+            border-color: var(--btn-danger-border);
+            color: var(--btn-danger-text);
+            box-shadow: 0 4px 0 var(--btn-danger-shadow);
+            flex: 0.5;
+        }
+        .btn-clear:active { box-shadow: 0 1px 0 var(--btn-danger-shadow); }
+
+        .btn-sm {
+            background: var(--btn-bg);
+            border: none;
+            color: var(--btn-text);
+            padding: 6px 12px;
+            font-weight: 500;
+            font-size: 0.7rem;
+            border: 1px solid var(--btn-border);
+            cursor: pointer;
+            min-width: 38px;
+            transition: background 0.15s, color 0.3s, border-color 0.3s;
+        }
+        .btn-sm:active { background: var(--hover-bg); }
+        .btn-sm.delete { background: var(--btn-danger-bg); border-color: var(--btn-danger-border); color: var(--btn-danger-text); }
+        .btn-sm.reopen { background: #1f4a3a; border-color: #2d6b52; color: #7be0a0; }
+        .btn-sm.reopen:active { background: #2d6b52; }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 16px 4px 10px;
+            transition: color 0.3s;
+        }
+        .section-title h3 {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+        .badge {
+            background: var(--badge-bg);
+            padding: 4px 14px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .position-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+        .position-item {
+            background: var(--bg-card);
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .pos-left { display: flex; flex-direction: column; gap: 2px; flex: 2; min-width: 140px; }
+        .pos-symbol {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            transition: color 0.3s;
+        }
+        .pos-symbol .type-badge {
+            font-size: 0.55rem;
+            background: var(--badge-bg);
+            padding: 2px 8px;
+            transition: background 0.3s;
+        }
+        .type-badge.long { color: var(--color-positive); }
+        .type-badge.short { color: var(--color-negative); }
+
+        .pos-detail {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 8px;
+            margin-top: 2px;
+            transition: color 0.3s;
+        }
+        .pos-detail span { background: var(--bg-input); padding: 0 6px 0 0; transition: background 0.3s; }
+        .sl-tp { font-weight: 500; background: var(--bg-input); padding: 0 6px; transition: background 0.3s; }
+        .sl { color: var(--color-sl); }
+        .tp { color: var(--color-tp); }
+        .current-price { color: var(--text-primary); font-weight: 600; transition: color 0.3s; }
+        .current-price.loading { color: var(--text-muted); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .pnl {
+            font-weight: 600;
+            padding: 0 4px;
+            font-size: 0.75rem;
+        }
+        .pnl.positive { color: var(--color-positive); }
+        .pnl.negative { color: var(--color-negative); }
+        .pnl.neutral { color: var(--text-secondary); }
+
+        .pos-actions { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+        .pos-actions .btn-sm { padding: 6px 10px; font-size: 0.65rem; min-width: 34px; }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 10px;
+            color: var(--text-muted);
+            background: var(--bg-panel);
+            font-size: 0.9rem;
+            border: 1px dashed var(--border-color);
+            transition: color 0.3s, background 0.3s, border-color 0.3s;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .stat-card {
+            background: var(--stat-bg);
+            border: 1px solid var(--stat-border);
+            padding: 10px 12px;
+            text-align: center;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .stat-card .label {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+        .stat-card .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 2px;
+            transition: color 0.3s;
+        }
+        .stat-card .value.positive { color: var(--color-positive); }
+        .stat-card .value.negative { color: var(--color-negative); }
+        .stat-card .value.neutral { color: var(--text-secondary); }
+        .stat-card.full { grid-column: 1 / -1; }
+
+        .history-item {
+            background: var(--history-bg);
+            border: 1px solid var(--history-border);
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .history-item .h-left { display: flex; flex-direction: column; gap: 1px; flex: 2; }
+        .history-item .h-symbol {
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+        .history-item .h-detail {
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            transition: color 0.3s;
+        }
+        .history-item .h-pnl { font-weight: 600; }
+        .history-item .h-pnl.positive { color: var(--color-positive); }
+        .history-item .h-pnl.negative { color: var(--color-negative); }
+        .history-item .h-actions { display: flex; gap: 4px; margin-left: 8px; flex-wrap: wrap; }
+
+        .clear-history-btn {
+            background: var(--btn-danger-bg);
+            border: 1px solid var(--btn-danger-border);
+            color: var(--btn-danger-text);
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-top: 8px;
+            transition: background 0.15s, color 0.3s, border-color 0.3s;
+        }
+        .clear-history-btn:active { background: var(--hover-bg); }
+
+        .export-section {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .export-btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            flex: 1;
+            transition: background 0.15s, color 0.3s, border-color 0.3s;
+        }
+        .export-btn:active { background: var(--hover-bg); }
+
+        .alert-box {
+            background: var(--alert-bg);
+            border: 1px solid var(--alert-border);
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+            color: var(--alert-text);
+            transition: background 0.3s, border-color 0.3s, color 0.3s;
+        }
+        .alert-box.warning {
+            border-color: var(--warning-border);
+            color: var(--warning-text);
+            background: var(--warning-bg);
+        }
+
+        .chart-container {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            margin-bottom: 16px;
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .chart-container canvas { width: 100% !important; height: 100% !important; }
+        .chart-controls {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .chart-controls select {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            flex: 1;
+            min-width: 80px;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .chart-controls button {
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: background 0.15s, color 0.3s, border-color 0.3s;
+        }
+        .chart-controls button:active { background: var(--hover-bg); }
+
+        .search-box {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .search-box input {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            min-width: 100px;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .search-box input:focus {
+            border-color: var(--color-accent);
+            outline: none;
+        }
+        .search-box select {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .search-box .btn-sm { padding: 8px 14px; }
+
+        .notification-banner {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: var(--warning-text);
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 0.7rem;
+            display: none;
+            cursor: pointer;
+        }
+        .notification-banner.show { display: block; }
+        .notification-banner:active { opacity: 0.7; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.2s;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: var(--modal-bg);
+            border: 1px solid var(--modal-border);
+            padding: 24px 20px 20px;
+            max-width: 340px;
+            width: 90%;
+            border-radius: 0 !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.2s;
+        }
+        .modal-box .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--modal-text);
+            margin-bottom: 8px;
+        }
+        .modal-box .modal-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+        .modal-box .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .modal-box .modal-buttons .btn-modal {
+            padding: 8px 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.15s;
+            min-width: 60px;
+        }
+        .modal-box .modal-buttons .btn-modal.confirm {
+            background: var(--color-accent);
+            color: white;
+        }
+        .modal-box .modal-buttons .btn-modal.confirm:hover { opacity: 0.85; }
+        .modal-box .modal-buttons .btn-modal.cancel {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+        }
+        .modal-box .modal-buttons .btn-modal.cancel:hover { background: var(--hover-bg); }
+        .modal-box .modal-buttons .btn-modal.danger {
+            background: var(--color-negative);
+            color: white;
+        }
+        .modal-box .modal-buttons .btn-modal.danger:hover { opacity: 0.85; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .btn, .btn-sm, .tab-btn, .refresh-btn, .export-btn, .clear-history-btn, .theme-toggle {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        @media (max-width: 420px) {
+            .app { padding: 14px 10px; }
+            .row { gap: 4px; grid-template-columns: 70px 1fr auto; }
+            .row input { padding: 8px 10px; font-size: 0.9rem; min-width: 50px; }
+            .dashboard-grid { gap: 6px; }
+            .stat-card { padding: 8px; }
+            .stat-card .value { font-size: 0.95rem; }
+            .chart-container { height: 160px; }
+            .history-item { flex-wrap: wrap; }
+            .history-item .h-actions { margin-left: 0; margin-top: 4px; width: 100%; justify-content: flex-end; }
+            .header-row { font-size: 0.6rem; gap: 2px; }
+            .header-row .item .label { display: none; }
+            .modal-box { max-width: 300px; padding: 18px 16px 16px; }
+        }
+
+        input[type="number"]::-webkit-inner-spin-button { opacity: 0.5; }
+        input, textarea { background: var(--bg-input); }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <h1>📊 Pro Paper Trade <small>Alpaca</small></h1>
+
+        <div class="header-row">
+            <span class="item"><span class="live-indicator" id="liveIndicator">● LIVE</span></span>
+            <span class="item"><span class="auto-saved-label" id="saveStatusLabel">💾 auto-saved</span></span>
+            <span class="item"><span class="api-status" id="apiStatus">API: checking</span></span>
+            <span class="item"><span class="api-calls" id="apiCalls">📊 0</span></span>
+            <span class="item"><button class="theme-toggle" id="themeToggle">🌓</button></span>
+            <span class="item"><button class="refresh-btn" id="refreshBtn">↻</button></span>
+        </div>
+
+        <div class="notification-banner" id="notificationBanner">
+            🔔 Enable notifications for SL/TP alerts
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tab-trade">Trade</button>
+            <button class="tab-btn" data-tab="tab-portfolio">Portfolio</button>
+            <button class="tab-btn" data-tab="tab-history">History</button>
+            <button class="tab-btn" data-tab="tab-export">Export</button>
+        </div>
+
+        <div class="tab-content active" id="tab-trade">
+            <div class="trade-panel">
+                <div class="row">
+                    <label>Ticker</label>
+                    <input type="text" id="tickerInput" placeholder="AAPL" value="AAPL">
+                </div>
+                <div class="row">
+                    <label>Shares</label>
+                    <input type="number" id="sharesInput" placeholder="100" value="10" step="1" min="1">
+                </div>
+                <div class="row">
+                    <label>Entry</label>
+                    <input type="number" id="priceInput" placeholder="175.50" value="175.50" step="0.01" min="0.01">
+                </div>
+                <div class="row">
+                    <label>Stop Loss</label>
+                    <input type="number" id="slInput" placeholder="170.00" value="170.00" step="0.01" min="0.01">
+                    <span class="hint">SL</span>
+                </div>
+                <div class="row">
+                    <label>Take Profit</label>
+                    <input type="number" id="tpInput" placeholder="185.00" value="185.00" step="0.01" min="0.01">
+                    <span class="hint">TP</span>
+                </div>
+                <div class="row">
+                    <label>Notes</label>
+                    <textarea id="notesInput" placeholder="Entry reason, setup notes..." rows="2"></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-long" id="longBtn">LONG</button>
+                    <button class="btn btn-short" id="shortBtn">SHORT</button>
+                    <button class="btn btn-clear" id="clearFieldsBtn">✕ Clear</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <h3>Open Positions</h3>
+                <span class="badge" id="countBadge">0</span>
+            </div>
+            <div id="positionContainer" class="position-list">
+                <div class="empty-state">✨ no positions — add a trade</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-portfolio">
+            <div class="dashboard-grid" id="dashboardGrid">
+                <div class="stat-card full"><div class="label">Total Value</div><div class="value" id="totalValue">$0.00</div></div>
+                <div class="stat-card"><div class="label">Total P&L</div><div class="value" id="totalPnL">$0.00</div></div>
+                <div class="stat-card"><div class="label">Day P&L</div><div class="value" id="dayPnL">$0.00</div></div>
+                <div class="stat-card"><div class="label">Win Rate</div><div class="value" id="winRate">0%</div></div>
+                <div class="stat-card"><div class="label">Open Positions</div><div class="value" id="openCount">0</div></div>
+                <div class="stat-card"><div class="label">Total Trades</div><div class="value" id="totalTrades">0</div></div>
+                <div class="stat-card"><div class="label">Best Trade</div><div class="value positive" id="bestTrade">$0.00</div></div>
+                <div class="stat-card"><div class="label">Avg Win</div><div class="value positive" id="avgWin">$0.00</div></div>
+                <div class="stat-card"><div class="label">Avg Loss</div><div class="value negative" id="avgLoss">$0.00</div></div>
+                <div class="stat-card"><div class="label">Profit Factor</div><div class="value" id="profitFactor">0.00</div></div>
+            </div>
+
+            <div class="section-title"><h3>Price Chart</h3></div>
+            <div class="chart-controls">
+                <select id="chartTickerSelect">
+                    <option value="">Select ticker...</option>
+                </select>
+                <select id="chartRangeSelect">
+                    <option value="7">7 Days</option>
+                    <option value="14">14 Days</option>
+                    <option value="30" selected>30 Days</option>
+                    <option value="60">60 Days</option>
+                    <option value="90">90 Days</option>
+                </select>
+                <button id="chartRefreshBtn">Update</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+            <div id="alertContainer"></div>
+        </div>
+
+        <div class="tab-content" id="tab-history">
+            <div class="section-title">
+                <h3>Closed Trades</h3>
+                <button class="clear-history-btn" id="clearHistoryBtn">Clear All</button>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="historySearch" placeholder="Search ticker...">
+                <select id="historyFilter">
+                    <option value="all">All</option>
+                    <option value="long">Long</option>
+                    <option value="short">Short</option>
+                    <option value="win">Wins</option>
+                    <option value="loss">Losses</option>
+                </select>
+                <button class="btn-sm" id="clearSearchBtn">Clear</button>
+            </div>
+
+            <div id="historyContainer">
+                <div class="empty-state">📭 No closed trades yet</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-export">
+            <div class="section-title"><h3>Data Export & Backup</h3></div>
+            <div class="export-section">
+                <button class="export-btn" id="exportCSV">Export CSV</button>
+                <button class="export-btn" id="exportJSON">Export JSON</button>
+                <button class="export-btn" id="importBackup">Import Backup</button>
+            </div>
+            <div style="margin-top:12px; font-size:0.7rem; color:var(--text-muted); transition:color 0.3s;">
+                <input type="file" id="fileInput" accept=".json" style="display:none;">
+                <span>Export your data as CSV for spreadsheets, or JSON for backup.</span>
+            </div>
+
+            <div class="section-title"><h3>API Credentials</h3></div>
+            <div class="trade-panel" style="margin-bottom:0;">
+                <div class="row">
+                    <label>API Key</label>
+                    <input type="text" id="apiKeyInput" placeholder="APCA-API-KEY-ID" autocomplete="off">
+                </div>
+                <div class="row">
+                    <label>Secret</label>
+                    <input type="password" id="apiSecretInput" placeholder="APCA-API-SECRET-KEY" autocomplete="off">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn" id="saveCredsBtn" style="background:var(--btn-bg); border-color:var(--btn-border); color:var(--btn-text);">Save Keys</button>
+                    <button class="btn-clear" id="clearCredsBtn" style="flex:1;">Clear Keys</button>
+                </div>
+                <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">
+                    Stored only in this browser's local storage — never written into this file, never sent anywhere except directly to Alpaca's API. Re-enter on every new device/browser.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CUSTOM MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <div class="modal-title" id="modalTitle">Confirm</div>
+            <div class="modal-message" id="modalMessage">Are you sure?</div>
+            <div class="modal-buttons">
+                <button class="btn-modal cancel" id="modalCancel">Cancel</button>
+                <button class="btn-modal confirm" id="modalConfirm">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ============================================================
+            //  CONFIG - Alpaca Markets API
+            // ============================================================
+            // Get your free API keys: https://app.alpaca.markets/signup
+            // Credentials are NOT hardcoded here. They're entered once per browser via
+            // the API Credentials panel (Export tab) and stored in localStorage only —
+            // this file is safe to commit to a public repo because it never contains
+            // a real key or secret. See getApiKey()/getApiSecret() below.
+            const CREDS_KEY_KEY = 'alpaca_api_key';
+            const CREDS_SECRET_KEY = 'alpaca_secret_key';
+            function getApiKey() { return localStorage.getItem(CREDS_KEY_KEY) || ''; }
+            function getApiSecret() { return localStorage.getItem(CREDS_SECRET_KEY) || ''; }
+
+            // Paper trading API endpoint (use paper account for free testing)
+            const ALPACA_BASE_URL = 'https://paper-api.alpaca.markets';
+            const ALPACA_DATA_URL = 'https://data.alpaca.markets';
+
+            // Free/IEX-tier accounts are NOT entitled to the SIP feed, which is the
+            // default if no `feed` param is sent. Forcing feed=iex avoids silent 403s.
+            const ALPACA_DATA_FEED = 'iex';
+
+            // ============================================================
+            //  END OF CONFIG
+            // ============================================================
+
+            const STORAGE_KEY = 'pro_paper_trade_data_v3';
+            const HISTORY_KEY = 'pro_trade_history_v3';
+            const ACHIEVEMENTS_KEY = 'pro_achievements_v3';
+            const THEME_KEY = 'pro_theme';
+
+            let positions = [];
+            let tradeHistory = [];
+            let currentPrices = {};
+            let apiCallCount = 0;
+            let isRefreshing = false;
+            let achievements = {};
+            let notificationPermission = false;
+            let modalResolve = null;
+
+            // DOM refs
+            const tickerInput = document.getElementById('tickerInput');
+            const sharesInput = document.getElementById('sharesInput');
+            const priceInput = document.getElementById('priceInput');
+            const slInput = document.getElementById('slInput');
+            const tpInput = document.getElementById('tpInput');
+            const notesInput = document.getElementById('notesInput');
+            const longBtn = document.getElementById('longBtn');
+            const shortBtn = document.getElementById('shortBtn');
+            const clearFieldsBtn = document.getElementById('clearFieldsBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const themeToggle = document.getElementById('themeToggle');
+            const positionContainer = document.getElementById('positionContainer');
+            const countBadge = document.getElementById('countBadge');
+            const apiStatus = document.getElementById('apiStatus');
+            const apiCalls = document.getElementById('apiCalls');
+            const liveIndicator = document.getElementById('liveIndicator');
+            const historyContainer = document.getElementById('historyContainer');
+            const historySearch = document.getElementById('historySearch');
+            const historyFilter = document.getElementById('historyFilter');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+            const alertContainer = document.getElementById('alertContainer');
+            const notificationBanner = document.getElementById('notificationBanner');
+            const fileInput = document.getElementById('fileInput');
+            const chartTickerSelect = document.getElementById('chartTickerSelect');
+            const chartRangeSelect = document.getElementById('chartRangeSelect');
+            const chartRefreshBtn = document.getElementById('chartRefreshBtn');
+            const canvas = document.getElementById('priceChart');
+            const ctx = canvas.getContext('2d');
+
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalConfirm = document.getElementById('modalConfirm');
+            const modalCancel = document.getElementById('modalCancel');
+
+            // ----- Custom Modal -----
+            function showModal(title, message, confirmText = 'OK', cancelText = 'Cancel', isDanger = false) {
+                return new Promise((resolve) => {
+                    modalTitle.textContent = title;
+                    modalMessage.textContent = message;
+                    modalConfirm.textContent = confirmText;
+                    modalCancel.textContent = cancelText;
+                    modalConfirm.className = isDanger ? 'btn-modal danger' : 'btn-modal confirm';
+                    modalOverlay.classList.add('show');
+                    modalResolve = resolve;
+                });
+            }
+
+            modalConfirm.addEventListener('click', () => {
+                modalOverlay.classList.remove('show');
+                if (modalResolve) modalResolve(true);
+            });
+
+            modalCancel.addEventListener('click', () => {
+                modalOverlay.classList.remove('show');
+                if (modalResolve) modalResolve(false);
+            });
+
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.classList.remove('show');
+                    if (modalResolve) modalResolve(false);
+                }
+            });
+
+            // ----- Theme -----
+            function loadTheme() {
+                const saved = localStorage.getItem(THEME_KEY);
+                if (saved === 'light') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            }
+
+            function toggleTheme() {
+                const current = document.documentElement.getAttribute('data-theme');
+                if (current === 'light') {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem(THEME_KEY, 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem(THEME_KEY, 'light');
+                }
+                if (chartTickerSelect.value && document.getElementById('tab-portfolio').classList.contains('active')) {
+                    setTimeout(() => loadChartData(chartTickerSelect.value, parseInt(chartRangeSelect.value)), 100);
+                }
+            }
+
+            // ----- Notifications -----
+            async function requestNotificationPermission() {
+                if (!('Notification' in window)) return;
+                if (Notification.permission === 'granted') {
+                    notificationPermission = true;
+                    notificationBanner.classList.remove('show');
+                    return;
+                }
+                if (Notification.permission === 'denied') {
+                    notificationBanner.classList.remove('show');
+                    return;
+                }
+                notificationBanner.classList.add('show');
+                notificationBanner.textContent = '🔔 Click to enable SL/TP alerts';
+                notificationBanner.onclick = async () => {
+                    const result = await Notification.requestPermission();
+                    if (result === 'granted') {
+                        notificationPermission = true;
+                        notificationBanner.classList.remove('show');
+                    } else {
+                        notificationBanner.textContent = '🔔 Notifications blocked';
+                        notificationBanner.style.cursor = 'default';
+                    }
+                };
+            }
+
+            function sendNotification(title, body) {
+                if (!notificationPermission) return;
+                try {
+                    new Notification(title, { body, icon: '📊', silent: false, vibrate: [200, 100, 200] });
+                } catch (e) {}
+            }
+
+            // ----- Achievements -----
+            function loadAchievements() {
+                try {
+                    const raw = localStorage.getItem(ACHIEVEMENTS_KEY);
+                    if (raw) {
+                        achievements = JSON.parse(raw);
+                    } else {
+                        achievements = { first: false, win: false, streak: false, trades10: false, profit1k: false,
+                            long: false };
+                        saveAchievements();
+                    }
+                } catch (_) {
+                    achievements = { first: false, win: false, streak: false, trades10: false, profit1k: false,
+                        long: false };
+                }
+            }
+
+            function saveAchievements() {
+                localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(achievements));
+            }
+
+            function checkAchievements() {
+                if (tradeHistory.length > 0 && !achievements.first) {
+                    achievements.first = true;
+                    sendNotification('🏆 Achievement Unlocked!', 'You made your first trade!');
+                }
+                if (tradeHistory.some(h => h.pnl > 0) && !achievements.win) {
+                    achievements.win = true;
+                    sendNotification('🏆 Achievement Unlocked!', 'You got your first winning trade!');
+                }
+                let streak = 0;
+                for (let i = tradeHistory.length - 1; i >= 0; i--) {
+                    if (tradeHistory[i].pnl > 0) streak++;
+                    else break;
+                }
+                if (streak >= 3 && !achievements.streak) {
+                    achievements.streak = true;
+                    sendNotification('🏆 Achievement Unlocked!', '3 wins in a row! 🔥');
+                }
+                if (tradeHistory.length >= 10 && !achievements.trades10) {
+                    achievements.trades10 = true;
+                    sendNotification('🏆 Achievement Unlocked!', 'You made 10 trades! 📊');
+                }
+                const totalProfit = tradeHistory.reduce((sum, h) => sum + h.pnl, 0);
+                if (totalProfit >= 1000 && !achievements.profit1k) {
+                    achievements.profit1k = true;
+                    sendNotification('🏆 Achievement Unlocked!', 'You made $1,000 profit! 💰');
+                }
+                const longCount = tradeHistory.filter(h => h.type === 'long').length;
+                if (longCount >= 5 && !achievements.long) {
+                    achievements.long = true;
+                    sendNotification('🏆 Achievement Unlocked!', '5 long trades! 📈');
+                }
+                saveAchievements();
+            }
+
+            // ----- Alpaca API Functions -----
+            async function fetchAlpacaTrade(ticker) {
+                try {
+                    const url = `${ALPACA_DATA_URL}/v2/stocks/${ticker}/trades/latest?feed=${ALPACA_DATA_FEED}`;
+                    const response = await fetch(url, {
+                        headers: {
+                            'APCA-API-KEY-ID': getApiKey(),
+                            'APCA-API-SECRET-KEY': getApiSecret()
+                        }
+                    });
+                    apiCallCount++;
+                    updateApiCalls();
+
+                    if (!response.ok) {
+                        dlog(`trade FAILED for ${ticker}: HTTP ${response.status}`);
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    if (data && data.trade && data.trade.p) {
+                        dlog(`trade OK for ${ticker}: price=${data.trade.p} at ${data.trade.t} exch=${data.trade.x}`);
+                        return { price: data.trade.p, timestamp: data.trade.t };
+                    }
+                    dlog(`trade returned no usable price for ${ticker}`);
+                    return null;
+                } catch (error) {
+                    console.error(`Alpaca trade error for ${ticker}:`, error);
+                    return null;
+                }
+            }
+
+            // Max acceptable spread as a fraction of midpoint before a quote is treated as
+            // unreliable. A real AAPL/NVDA-class spread is fractions of a percent; the IEX
+            // free feed has been observed returning >10% spreads from stale resting orders
+            // on both sides (e.g. AAPL ap=313.43/bp=283.52, a $29.91 spread) — those are not
+            // usable for SL/TP or P&L and must not be fed into checkAutoClose.
+            const MAX_QUOTE_SPREAD_PCT = 0.02;
+
+            // Live price source, in priority order: an actual executed trade (can't be a
+            // stale resting order by construction) first, falling back to a quote only if
+            // its spread passes the sanity gate above.
+            async function fetchLivePrice(ticker) {
+                const trade = await fetchAlpacaTrade(ticker);
+                if (trade) return trade;
+
+                // Falls back to a quote only if fetchAlpacaQuote's internal spread sanity
+                // gate passes; otherwise it returns null and we have no usable live price.
+                return await fetchAlpacaQuote(ticker);
+            }
+
+            async function fetchAlpacaQuote(ticker) {
+                try {
+                    const url = `${ALPACA_DATA_URL}/v2/stocks/${ticker}/quotes/latest?feed=${ALPACA_DATA_FEED}`;
+                    const response = await fetch(url, {
+                        headers: {
+                            'APCA-API-KEY-ID': getApiKey(),
+                            'APCA-API-SECRET-KEY': getApiSecret()
+                        }
+                    });
+                    apiCallCount++;
+                    updateApiCalls();
+
+                    if (!response.ok) {
+                        dlog(`quote FAILED for ${ticker}: HTTP ${response.status} (check feed=${ALPACA_DATA_FEED} entitlement / key validity)`);
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    dlog(`quote raw response for ${ticker}:`, data);
+                    if (data && data.quote) {
+                        const q = data.quote;
+                        const mid = (q.ap + q.bp) / 2;
+                        const spreadPct = mid > 0 ? Math.abs(q.ap - q.bp) / mid : 0;
+                        dlog(`quote fields for ${ticker}: ap=${q.ap} bp=${q.bp} ax=${q.ax} bx=${q.bx} t=${q.t} spread=${(q.ap - q.bp).toFixed(4)} spreadPct=${(spreadPct * 100).toFixed(2)}%`);
+                        if (spreadPct > MAX_QUOTE_SPREAD_PCT) {
+                            dlog(`quote REJECTED for ${ticker}: spread ${(spreadPct * 100).toFixed(2)}% exceeds ${(MAX_QUOTE_SPREAD_PCT * 100)}% sanity limit — likely stale resting orders on a thin venue, not a real market`);
+                            return null;
+                        }
+                    }
+                    if (data && data.quote && data.quote.ap) {
+                        dlog(`quote OK for ${ticker}: ask=${data.quote.ap} at ${data.quote.t}`);
+                        return { price: data.quote.ap, timestamp: data.quote.t };
+                    }
+                    dlog(`quote returned no usable ask price for ${ticker}`);
+                    return null;
+                } catch (error) {
+                    console.error(`Alpaca quote error for ${ticker}:`, error);
+                    return null;
+                }
+            }
+
+            async function fetchAlpacaHistorical(ticker, days) {
+                try {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setDate(start.getDate() - days);
+
+                    const startStr = start.toISOString().split('T')[0];
+                    const endStr = end.toISOString().split('T')[0];
+
+                    const url =
+                        `${ALPACA_DATA_URL}/v2/stocks/${ticker}/bars?timeframe=1Day&start=${startStr}&end=${endStr}&limit=${days + 1}&feed=${ALPACA_DATA_FEED}`;
+
+                    const response = await fetch(url, {
+                        headers: {
+                            'APCA-API-KEY-ID': getApiKey(),
+                            'APCA-API-SECRET-KEY': getApiSecret()
+                        }
+                    });
+                    apiCallCount++;
+                    updateApiCalls();
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    if (data && data.bars && data.bars.length > 0) {
+                        // Keep close price paired with its actual bar date so the chart
+                        // doesn't mislabel weekend/holiday gaps as sequential days.
+                        return data.bars.map(bar => ({ close: bar.c, date: bar.t }));
+                    }
+                    return null;
+                } catch (error) {
+                    console.error(`Alpaca historical error for ${ticker}:`, error);
+                    return null;
+                }
+            }
+
+            // ----- Refresh Prices -----
+            async function refreshAllPrices() {
+                if (isRefreshing) return;
+                isRefreshing = true;
+                refreshBtn.disabled = true;
+                refreshBtn.textContent = '⏳';
+
+                try {
+                    const tickers = [...new Set(positions.map(p => p.ticker))];
+                    if (tickers.length === 0) {
+                        updateApiStatus('online', 'Ready');
+                        isRefreshing = false;
+                        refreshBtn.disabled = false;
+                        refreshBtn.textContent = '↻';
+                        return;
+                    }
+
+                    let successCount = 0;
+                    const fetchPromises = tickers.map(async (ticker) => {
+                        const result = await fetchLivePrice(ticker);
+                        if (result) {
+                            currentPrices[ticker] = result.price;
+                            successCount++;
+                        }
+                    });
+
+                    await Promise.all(fetchPromises);
+                    dlog(`refreshAllPrices: ${successCount}/${tickers.length} quotes succeeded`, currentPrices);
+
+                    // Reflect actual fetch outcome instead of assuming success.
+                    if (successCount === 0) {
+                        updateApiStatus('offline', 'No data (check keys/feed)');
+                    } else if (successCount < tickers.length) {
+                        updateApiStatus('partial', `${successCount}/${tickers.length} ok`);
+                    } else {
+                        updateApiStatus('online', 'Alpaca ✓');
+                    }
+
+                    positions.forEach(pos => {
+                        if (!currentPrices[pos.ticker]) currentPrices[pos.ticker] = pos.price;
+                    });
+
+                    checkAutoClose();
+                    checkAlerts();
+                    render();
+                    updateDashboard();
+                    if (chartTickerSelect.value) {
+                        loadChartData(chartTickerSelect.value, parseInt(chartRangeSelect.value));
+                    }
+                } catch (error) {
+                    console.error('Refresh error:', error);
+                    updateApiStatus('offline', 'Error');
+                } finally {
+                    isRefreshing = false;
+                    refreshBtn.disabled = false;
+                    refreshBtn.textContent = '↻';
+                }
+            }
+
+            // ----- Chart Functions -----
+            async function loadChartData(ticker, days) {
+                if (!ticker) return;
+                const data = await fetchAlpacaHistorical(ticker, days);
+                if (data && data.length > 0) {
+                    drawChart(data, ticker);
+                } else {
+                    const fallbackData = [];
+                    let base = currentPrices[ticker] || 100;
+                    const today = new Date();
+                    for (let i = 0; i < Math.min(days, 30); i++) {
+                        base += (Math.random() - 0.5) * 2;
+                        if (base < 1) base = 1;
+                        const d = new Date(today);
+                        d.setDate(d.getDate() - (Math.min(days, 30) - 1 - i));
+                        fallbackData.push({ close: base, date: d.toISOString() });
+                    }
+                    drawChart(fallbackData, ticker + ' (sim)');
+                }
+            }
+
+            function drawChart(data, ticker) {
+                if (!ctx) return;
+                const width = canvas.parentElement.clientWidth - 24;
+                const height = canvas.parentElement.clientHeight - 20;
+                canvas.width = width * 2;
+                canvas.height = height * 2;
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.scale(2, 2);
+
+                const padding = { top: 20, bottom: 25, left: 40, right: 20 };
+                const chartWidth = width - padding.left - padding.right;
+                const chartHeight = height - padding.top - padding.bottom;
+
+                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                const gridColor = isLight ? '#d0d4d9' : '#1f2837';
+                const textColor = isLight ? '#5a6a7a' : '#5e6f86';
+                const lineColor = isLight ? '#4a7adf' : '#5b8def';
+                const fillColor = isLight ? 'rgba(74, 122, 223, 0.1)' : 'rgba(91, 141, 239, 0.1)';
+
+                ctx.clearRect(0, 0, width, height);
+
+                if (!data || data.length === 0) {
+                    ctx.fillStyle = textColor;
+                    ctx.font = '12px system-ui';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No data available', width / 2, height / 2);
+                    return;
+                }
+
+                const closes = data.map(d => d.close);
+                const min = Math.min(...closes) * 0.995;
+                const max = Math.max(...closes) * 1.005;
+                const range = max - min || 1;
+
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < 5; i++) {
+                    const y = padding.top + (chartHeight * i / 4);
+                    ctx.beginPath();
+                    ctx.moveTo(padding.left, y);
+                    ctx.lineTo(width - padding.right, y);
+                    ctx.stroke();
+                    const priceVal = max - (range * i / 4);
+                    ctx.fillStyle = textColor;
+                    ctx.font = '8px system-ui';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(priceVal.toFixed(2), padding.left - 4, y + 3);
+                }
+
+                const step = chartWidth / (data.length - 1);
+                ctx.beginPath();
+                ctx.strokeStyle = lineColor;
+                ctx.lineWidth = 2;
+
+                closes.forEach((price, i) => {
+                    const x = padding.left + (i * step);
+                    const y = padding.top + chartHeight - ((price - min) / range * chartHeight);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                const lastX = padding.left + ((data.length - 1) * step);
+                ctx.lineTo(lastX, padding.top + chartHeight);
+                ctx.lineTo(padding.left, padding.top + chartHeight);
+                ctx.closePath();
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+
+                // Calendar-aware x-axis labels (date, not bar index) so weekend/holiday
+                // gaps in the underlying daily bars aren't implied as consecutive days.
+                ctx.fillStyle = textColor;
+                ctx.font = '8px system-ui';
+                ctx.textAlign = 'center';
+                const stepLabels = Math.max(1, Math.floor(data.length / 6));
+                data.forEach((d, i) => {
+                    if (i % stepLabels === 0 || i === data.length - 1) {
+                        const x = padding.left + (i * step);
+                        let label = `${i + 1}`;
+                        if (d.date) {
+                            const dt = new Date(d.date);
+                            if (!isNaN(dt.getTime())) {
+                                label = `${dt.getMonth() + 1}/${dt.getDate()}`;
+                            }
+                        }
+                        ctx.fillText(label, x, height - 4);
+                    }
+                });
+
+                ctx.fillStyle = textColor;
+                ctx.font = '10px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${ticker} - ${data.length} Day Chart`, width / 2, 14);
+            }
+
+            function updateChartTickerOptions() {
+                const tickers = [...new Set(positions.map(p => p.ticker))];
+                chartTickerSelect.innerHTML = '<option value="">Select ticker...</option>';
+                tickers.forEach(t => {
+                    const option = document.createElement('option');
+                    option.value = t;
+                    option.textContent = t;
+                    chartTickerSelect.appendChild(option);
+                });
+                if (tickers.length > 0 && !chartTickerSelect.value) {
+                    chartTickerSelect.value = tickers[0];
+                    loadChartData(tickers[0], parseInt(chartRangeSelect.value));
+                }
+            }
+
+            // ----- Build a history record (single source of truth for the schema) -----
+            // Previously duplicated inline in checkAutoClose / closePosition / clearAllPositions —
+            // any one of those could drift out of sync with the others.
+            function buildHistoryEntry(pos, exitPrice, autoClosed) {
+                const pnl = calculatePnL(pos, exitPrice);
+                return {
+                    id: genId(),
+                    ticker: pos.ticker,
+                    shares: pos.shares,
+                    entryPrice: pos.price,
+                    exitPrice: exitPrice,
+                    type: pos.type,
+                    pnl: pnl.currentPnL,
+                    entryDate: pos.entryDate || Date.now(),
+                    exitDate: Date.now(),
+                    stopLoss: pos.stopLoss,
+                    takeProfit: pos.takeProfit,
+                    notes: pos.notes || '',
+                    autoClosed: !!autoClosed,
+                };
+            }
+
+            // ----- SL/TP hit test (single source of truth) -----
+            // Previously this exact condition was duplicated in checkAutoClose AND render()'s
+            // badge logic — two places that could silently drift apart.
+            function evaluateSlTpHit(pos, currentPrice) {
+                const sl = Number(pos.stopLoss) || 0;
+                const tp = Number(pos.takeProfit) || 0;
+                const slHit = (sl > 0 && pos.type === 'long' && currentPrice <= sl) ||
+                    (sl > 0 && pos.type === 'short' && currentPrice >= sl);
+                const tpHit = (tp > 0 && pos.type === 'long' && currentPrice >= tp) ||
+                    (tp > 0 && pos.type === 'short' && currentPrice <= tp);
+                return { slHit, tpHit };
+            }
+
+            // ----- Auto-close at SL/TP -----
+            function checkAutoClose() {
+                let closed = false;
+                const toRemove = [];
+
+                positions.forEach((pos, index) => {
+                    const currentPrice = currentPrices[pos.ticker] || pos.price;
+                    const { slHit, tpHit } = evaluateSlTpHit(pos, currentPrice);
+                    dlog(`checkAutoClose: ${pos.ticker} ${pos.type} currentPrice=${currentPrice} entry=${pos.price} SL=${pos.stopLoss} TP=${pos.takeProfit} -> slHit=${slHit} tpHit=${tpHit}`);
+
+                    if (slHit || tpHit) {
+                        // Report both if a gap blew through both levels in one poll cycle —
+                        // previously only the last-checked condition (TP) was recorded.
+                        const reasons = [];
+                        if (slHit) reasons.push(`Stop Loss hit at $${currentPrice.toFixed(2)}`);
+                        if (tpHit) reasons.push(`Take Profit hit at $${currentPrice.toFixed(2)}`);
+                        const reason = reasons.join(' AND ');
+
+                        const entry = buildHistoryEntry(pos, currentPrice, true);
+                        tradeHistory.push(entry);
+                        toRemove.push(index);
+                        const emoji = entry.pnl > 0 ? '🟢' : '🔴';
+                        sendNotification(`${emoji} ${pos.ticker} Auto-Closed`,
+                            `${reason}\nP&L: $${entry.pnl.toFixed(2)}`);
+                        showAlert(`${pos.ticker} auto-closed: ${reason} (P&L: $${entry.pnl.toFixed(2)})`);
+                        closed = true;
+                    }
+                });
+
+                toRemove.sort((a, b) => b - a).forEach(idx => { positions.splice(idx, 1); });
+
+                if (closed) {
+                    saveData();
+                    render();
+                    updateDashboard();
+                    renderHistory();
+                    updateChartTickerOptions();
+                    checkAchievements();
+                }
+            }
+
+            function showAlert(message) {
+                if (!alertContainer) return;
+                const el = document.createElement('div');
+                el.className = 'alert-box';
+                el.textContent = '🔔 ' + message;
+                alertContainer.prepend(el);
+                setTimeout(() => { if (el.parentNode) el.remove(); }, 8000);
+            }
+
+            // ----- Data Management -----
+            function loadData() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) { positions = parsed; }
+                    }
+                    dlog(`loadData: localStorage accessible, ${positions.length} positions loaded`);
+                } catch (error) {
+                    console.error('loadData FAILED to read positions — localStorage may be blocked in this context:', error);
+                    dlog(`loadData FAILED: ${error.message}`);
+                    positions = [];
+                }
+
+                try {
+                    const raw = localStorage.getItem(HISTORY_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) { tradeHistory = parsed; }
+                    }
+                } catch (_) { tradeHistory = []; }
+
+                // No seed/demo positions on first load. Hardcoded example prices (AAPL @178,
+                // TSLA @245) are guaranteed to drift arbitrarily far from the real market by
+                // the time anyone opens this file, and will misfire SL/TP the instant a live
+                // price comes in — exactly what happened with the TSLA seed position once the
+                // feed itself was fixed. Start empty; the user adds their own real trades.
+                positions.forEach(p => {
+                    if (!currentPrices[p.ticker]) currentPrices[p.ticker] = p.price;
+                    if (!p.notes) p.notes = '';
+                });
+                updateChartTickerOptions();
+                loadAchievements();
+            }
+
+            let lastSaveOk = true;
+            function saveData() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+                    localStorage.setItem(HISTORY_KEY, JSON.stringify(tradeHistory));
+                    dlog(`saveData OK: ${positions.length} positions, ${tradeHistory.length} history entries`);
+                    lastSaveOk = true;
+                    updateSaveStatusLabel();
+                    return true;
+                } catch (error) {
+                    // localStorage can throw (quota, or blocked/partitioned third-party
+                    // storage inside a sandboxed iframe like Google Sites' embed) instead
+                    // of just failing — this used to propagate uncaught and silently skip
+                    // every line after saveData() in the caller, including render().
+                    console.error('saveData FAILED — position/history changes are NOT persisted:', error);
+                    dlog(`saveData FAILED: ${error.message}`);
+                    lastSaveOk = false;
+                    updateSaveStatusLabel();
+                    showAlert(`⚠️ Save failed (${error.message}) — your last change may be lost on reload.`);
+                    return false;
+                }
+            }
+
+            function updateSaveStatusLabel() {
+                const el = document.getElementById('saveStatusLabel');
+                if (!el) return;
+                if (lastSaveOk) {
+                    el.textContent = '💾 auto-saved';
+                    el.style.color = '';
+                } else {
+                    el.textContent = '⚠️ save failed';
+                    el.style.color = 'var(--color-negative)';
+                }
+            }
+
+            function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+            // ----- Debug logging (F12 console) -----
+            // Toggle to false to silence. Traces exactly what price was compared against
+            // what SL/TP, so "triggered immediately" can be confirmed as real-feed-vs-stale-
+            // entry math rather than a logic bug.
+            const DEBUG = true;
+            function dlog(...args) { if (DEBUG) console.log('%c[paper-trade]', 'color:#5b8def;font-weight:bold', ...args); }
+
+            // ----- Calculate P&L -----
+            function calculatePnL(pos, currentPrice) {
+                const shares = Number(pos.shares) || 0;
+                const entry = Number(pos.price) || 0;
+                const sl = Number(pos.stopLoss) || 0;
+                const tp = Number(pos.takeProfit) || 0;
+                const isLong = pos.type === 'long';
+
+                let currentPnL = isLong ? (currentPrice - entry) * shares : (entry - currentPrice) * shares;
+                let slPnL = null;
+                if (sl > 0) { slPnL = isLong ? (sl - entry) * shares : (entry - sl) * shares; }
+                let tpPnL = null;
+                if (tp > 0) { tpPnL = isLong ? (tp - entry) * shares : (entry - tp) * shares; }
+                let rrRatio = null;
+                if (slPnL !== null && tpPnL !== null && slPnL !== 0) {
+                    rrRatio = Math.abs(tpPnL / slPnL);
+                }
+                return { currentPnL, slPnL, tpPnL, rrRatio };
+            }
+
+            // ----- Validate that SL/TP sit on the correct side of entry -----
+            // Long: SL must be below entry, TP must be above entry (and vice-versa for short).
+            // Previously unvalidated — contradictory levels were accepted silently and produced
+            // a meaningless R:R (e.g. negative slPnL/tpPnL signs flipped).
+            function validateSlTp(type, entry, sl, tp) {
+                const errors = [];
+                const isLong = type === 'long';
+                if (sl > 0) {
+                    if (isLong && sl >= entry) errors.push('Stop Loss must be below entry price for a LONG.');
+                    if (!isLong && sl <= entry) errors.push('Stop Loss must be above entry price for a SHORT.');
+                }
+                if (tp > 0) {
+                    if (isLong && tp <= entry) errors.push('Take Profit must be above entry price for a LONG.');
+                    if (!isLong && tp >= entry) errors.push('Take Profit must be below entry price for a SHORT.');
+                }
+                return errors;
+            }
+
+            // ----- Re-open Position -----
+            async function reopenPosition(historyIndex) {
+                if (historyIndex < 0 || historyIndex >= tradeHistory.length) return;
+                const hist = tradeHistory[historyIndex];
+
+                const existing = positions.find(p => p.ticker === hist.ticker);
+                if (existing) {
+                    const confirmed = await showModal('Re-open Position',
+                        `${hist.ticker} already has an open position. Re-open anyway?`, 'Re-open', 'Cancel', false);
+                    if (!confirmed) return;
+                }
+
+                const newPos = {
+                    id: genId(),
+                    ticker: hist.ticker,
+                    shares: hist.shares,
+                    price: hist.entryPrice,
+                    type: hist.type,
+                    stopLoss: hist.stopLoss || 0,
+                    takeProfit: hist.takeProfit || 0,
+                    entryDate: Date.now(),
+                    notes: hist.notes || '',
+                };
+
+                positions.push(newPos);
+                if (!currentPrices[hist.ticker]) {
+                    currentPrices[hist.ticker] = hist.entryPrice;
+                }
+
+                tradeHistory.splice(historyIndex, 1);
+                saveData();
+                render();
+                updateDashboard();
+                renderHistory();
+                updateChartTickerOptions();
+                checkAchievements();
+            }
+
+            // ----- Render Positions -----
+            function render() {
+                if (!positionContainer) return;
+                if (positions.length === 0) {
+                    positionContainer.innerHTML = `<div class="empty-state">📭 no open positions</div>`;
+                    countBadge.textContent = '0';
+                    return;
+                }
+
+                let html = '';
+                positions.forEach((pos, index) => {
+                    const typeClass = pos.type === 'long' ? 'long' : 'short';
+                    const typeLabel = pos.type === 'long' ? 'LONG' : 'SHORT';
+                    const shares = Number(pos.shares) || 0;
+                    const entry = Number(pos.price) || 0;
+                    const sl = Number(pos.stopLoss) || 0;
+                    const tp = Number(pos.takeProfit) || 0;
+
+                    const currentPrice = currentPrices[pos.ticker] || entry;
+                    const hasRealPrice = currentPrices[pos.ticker] !== undefined;
+                    const pnl = calculatePnL(pos, currentPrice);
+
+                    const totalValue = (shares * currentPrice).toFixed(2);
+                    // SL/TP price paired with its dollar consequence right next to it,
+                    // instead of the price living in one row and the $ amount in a
+                    // separate box further down the card.
+                    const slDisplay = sl > 0
+                        ? `SL ${sl.toFixed(2)}${pnl.slPnL !== null ? ' (' + formatSignedCurrency(pnl.slPnL) + ')' : ''}`
+                        : '—';
+                    const tpDisplay = tp > 0
+                        ? `TP ${tp.toFixed(2)}${pnl.tpPnL !== null ? ' (' + formatSignedCurrency(pnl.tpPnL) + ')' : ''}`
+                        : '—';
+
+                    const currentPnLStr = formatSignedCurrency(pnl.currentPnL);
+                    const pnlClass = pnl.currentPnL > 0 ? 'positive' : (pnl.currentPnL < 0 ? 'negative' : 'neutral');
+                    const rrDisplay = pnl.rrRatio !== null ? `R:R ${pnl.rrRatio.toFixed(2)}` : '';
+
+                    const priceDisplay = hasRealPrice ? currentPrice.toFixed(2) : `${currentPrice.toFixed(2)} (est)`;
+                    const priceClass = hasRealPrice ? 'current-price' : 'current-price loading';
+
+                    const { slHit: slHitNow, tpHit: tpHitNow } = evaluateSlTpHit(pos, currentPrice);
+                    let hitAlert = '';
+                    if (slHitNow) hitAlert = ' ⚠️ SL TRIGGERED';
+                    if (tpHitNow) hitAlert = ' 🎯 TP TRIGGERED';
+
+                    const notesDisplay = pos.notes ? `<span style="font-style:italic;">📝 ${escapeHtml(pos.notes)}</span>` :
+                        '';
+
+                    html += `
+                        <div class="position-item" data-index="${index}">
+                            <div class="pos-left">
+                                <div class="pos-symbol">
+                                    ${escapeHtml(pos.ticker || '???')}${hitAlert}
+                                    <span class="type-badge ${typeClass}">${typeLabel}</span>
+                                    <span class="${priceClass}">$${priceDisplay}</span>
+                                </div>
+                                <div class="pos-detail">
+                                    <span>${shares} shares</span>
+                                    <span>Entry $${entry.toFixed(2)}</span>
+                                    <span>Value $${totalValue}</span>
+                                </div>
+                                <div class="pos-detail">
+                                    <span class="sl-tp sl">${slDisplay}</span>
+                                    <span class="sl-tp tp">${tpDisplay}</span>
+                                    ${rrDisplay ? `<span class="sl-tp">${rrDisplay}</span>` : ''}
+                                </div>
+                                ${notesDisplay ? `<div class="pos-detail" style="font-size:0.6rem;">${notesDisplay}</div>` : ''}
+                                <div class="pos-detail" style="margin-top:4px; font-size:0.8rem; font-weight:600; background:var(--bg-input); padding:5px 8px; border:1px solid var(--border-color);">
+                                    <span class="pnl ${pnlClass}">Unrealised P&L: ${currentPnLStr}</span>
+                                </div>
+                            </div>
+                            <div class="pos-actions">
+                                <button class="btn-sm" data-action="edit" data-index="${index}">✏️</button>
+                                <button class="btn-sm" data-action="close" data-index="${index}">Close</button>
+                                <button class="btn-sm delete" data-action="delete" data-index="${index}">✕</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                positionContainer.innerHTML = html;
+                countBadge.textContent = positions.length;
+
+                document.querySelectorAll('[data-action="edit"]').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = this.getAttribute('data-index');
+                        if (idx !== null) editPosition(parseInt(idx, 10));
+                    });
+                });
+
+                document.querySelectorAll('[data-action="close"]').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = this.getAttribute('data-index');
+                        if (idx !== null) closePosition(parseInt(idx, 10));
+                    });
+                });
+
+                document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = this.getAttribute('data-index');
+                        if (idx !== null) deletePosition(parseInt(idx, 10));
+                    });
+                });
+            }
+
+            // ----- Edit Position -----
+            async function editPosition(index) {
+                if (index < 0 || index >= positions.length) return;
+                const pos = positions[index];
+
+                tickerInput.value = pos.ticker || '';
+                sharesInput.value = pos.shares || 1;
+                priceInput.value = pos.price || 0;
+                slInput.value = pos.stopLoss || '';
+                tpInput.value = pos.takeProfit || '';
+                notesInput.value = pos.notes || '';
+
+                const confirmed = await showModal(`✏️ Edit ${pos.ticker} (${pos.type})`,
+                    'Update with current input values?', 'Update', 'Cancel', false);
+                if (!confirmed) return;
+
+                const newTicker = tickerInput.value.trim().toUpperCase();
+                const newShares = parseFloat(sharesInput.value);
+                const newPrice = parseFloat(priceInput.value);
+                const newSL = parseFloat(slInput.value) || 0;
+                const newTP = parseFloat(tpInput.value) || 0;
+                const newNotes = notesInput.value.trim();
+
+                if (!newTicker) { await showModal('Error', 'Ticker required.', 'OK', '', false); return; }
+                if (isNaN(newShares) || newShares <= 0) { await showModal('Error', 'Shares must be > 0', 'OK', '',
+                    false); return; }
+                if (isNaN(newPrice) || newPrice <= 0) { await showModal('Error', 'Price must be > 0', 'OK', '',
+                    false); return; }
+                if (newSL < 0 || newTP < 0) { await showModal('Error', 'SL/TP cannot be negative.', 'OK', '',
+                    false); return; }
+
+                const slTpErrors = validateSlTp(pos.type, newPrice, newSL, newTP);
+                if (slTpErrors.length > 0) {
+                    await showModal('Invalid SL/TP', slTpErrors.join(' '), 'OK', '', false);
+                    return;
+                }
+
+                positions[index] = { ...pos, ticker: newTicker, shares: newShares, price: newPrice, stopLoss: newSL,
+                    takeProfit: newTP, notes: newNotes };
+
+                if (!currentPrices[newTicker]) {
+                    currentPrices[newTicker] = newPrice;
+                }
+
+                saveData();
+                render();
+                updateDashboard();
+                updateChartTickerOptions();
+            }
+
+            // ----- Close Position -----
+            async function closePosition(index) {
+                if (index < 0 || index >= positions.length) return;
+                const pos = positions[index];
+
+                const confirmed = await showModal(`Close ${pos.ticker}?`,
+                    'Close this position and add to history?', 'Close', 'Cancel', false);
+                if (!confirmed) return;
+
+                const currentPrice = currentPrices[pos.ticker] || pos.price;
+                tradeHistory.push(buildHistoryEntry(pos, currentPrice, false));
+                positions.splice(index, 1);
+                saveData();
+                render();
+                updateDashboard();
+                renderHistory();
+                updateChartTickerOptions();
+                checkAchievements();
+            }
+
+            // ----- Delete Position -----
+            async function deletePosition(index) {
+                if (index < 0 || index >= positions.length) return;
+                const confirmed = await showModal(`Delete ${positions[index].ticker}?`,
+                    'This will remove the position without saving to history.', 'Delete', 'Cancel', true);
+                if (!confirmed) return;
+                positions.splice(index, 1);
+                saveData();
+                render();
+                updateDashboard();
+                updateChartTickerOptions();
+            }
+
+            // ----- Add Position -----
+            async function addPosition(ticker, shares, price, type, stopLoss, takeProfit, notes) {
+                if (!ticker || ticker.trim() === '') {
+                    await showModal('Error', 'Enter a ticker symbol.', 'OK', '', false);
+                    return false;
+                }
+                const sharesNum = parseFloat(shares);
+                const priceNum = parseFloat(price);
+                if (isNaN(sharesNum) || sharesNum <= 0) {
+                    await showModal('Error', 'Shares must be > 0', 'OK', '', false);
+                    return false;
+                }
+                if (isNaN(priceNum) || priceNum <= 0) {
+                    await showModal('Error', 'Price must be > 0', 'OK', '', false);
+                    return false;
+                }
+                const slNum = parseFloat(stopLoss) || 0;
+                const tpNum = parseFloat(takeProfit) || 0;
+                if (slNum < 0 || tpNum < 0) {
+                    await showModal('Error', 'SL/TP cannot be negative.', 'OK', '', false);
+                    return false;
+                }
+
+                const slTpErrors = validateSlTp(type, priceNum, slNum, tpNum);
+                if (slTpErrors.length > 0) {
+                    await showModal('Invalid SL/TP', slTpErrors.join(' '), 'OK', '', false);
+                    return false;
+                }
+
+                const tickerUpper = ticker.trim().toUpperCase();
+                const newPos = {
+                    id: genId(),
+                    ticker: tickerUpper,
+                    shares: sharesNum,
+                    price: priceNum,
+                    type: type,
+                    stopLoss: slNum,
+                    takeProfit: tpNum,
+                    entryDate: Date.now(),
+                    notes: notes || '',
+                };
+                positions.push(newPos);
+                dlog(`position added: ${tickerUpper} ${type} entry=${priceNum} SL=${slNum} TP=${tpNum}`);
+                if (!currentPrices[tickerUpper]) {
+                    currentPrices[tickerUpper] = priceNum;
+                    fetchLivePrice(tickerUpper).then(result => {
+                        if (result) {
+                            currentPrices[tickerUpper] = result.price;
+                            // Warn if the live price is already past your entered SL/TP — but
+                            // do NOT auto-close here. Your typed entry price may legitimately
+                            // differ from the live tick (logging an earlier fill, a backtest
+                            // number, etc). Destroying the position the instant you add it is
+                            // worse than the delayed-close problem this was meant to fix.
+                            // Closure still happens, but only via the normal checkAutoClose()
+                            // poll cycle, after you've seen the TRIGGERED badge on the card.
+                            const { slHit, tpHit } = evaluateSlTpHit(newPos, result.price);
+                            dlog(`live price for ${tickerUpper} = ${result.price} vs entry=${priceNum} SL=${slNum} TP=${tpNum} -> slHit=${slHit} tpHit=${tpHit}`);
+                            if (slHit || tpHit) {
+                                showAlert(`${tickerUpper} live price ($${result.price.toFixed(2)}) is already past your ${slHit ? 'Stop Loss' : 'Take Profit'} — review before it auto-closes on next refresh.`);
+                            }
+                            render();
+                            updateDashboard();
+                        } else {
+                            dlog(`no live quote returned for ${tickerUpper} — currentPrices left at typed entry (${priceNum}), SL/TP cannot trigger until a real quote arrives`);
+                        }
+                    });
+                }
+                saveData();
+                render();
+                updateDashboard();
+                updateChartTickerOptions();
+                checkAchievements();
+                return true;
+            }
+
+            // ----- Clear Fields -----
+            function clearInputFields() {
+                tickerInput.value = '';
+                sharesInput.value = '';
+                priceInput.value = '';
+                slInput.value = '';
+                tpInput.value = '';
+                notesInput.value = '';
+                tickerInput.focus();
+            }
+
+            // ----- Dashboard -----
+            function updateDashboard() {
+                if (!document.getElementById('dashboardGrid')) return;
+
+                let totalValue = 0;
+                let totalPnL = 0;
+                let dayPnL = 0;
+                let openCount = positions.length;
+                let totalTrades = tradeHistory.length;
+
+                positions.forEach(pos => {
+                    const currentPrice = currentPrices[pos.ticker] || pos.price;
+                    const shares = Number(pos.shares) || 0;
+                    totalValue += shares * currentPrice;
+                    const pnl = calculatePnL(pos, currentPrice);
+                    totalPnL += pnl.currentPnL;
+                    dayPnL += pnl.currentPnL;
+                });
+
+                let wins = 0,
+                    totalWins = 0,
+                    totalLosses = 0,
+                    lossCount = 0;
+                tradeHistory.forEach(h => {
+                    if (h.pnl > 0) { wins++;
+                        totalWins += h.pnl; } else if (h.pnl < 0) { lossCount++;
+                        totalLosses += Math.abs(h.pnl); }
+                });
+                const winRate = tradeHistory.length > 0 ? ((wins / tradeHistory.length) * 100).toFixed(1) : '0';
+
+                let bestTrade = 0;
+                tradeHistory.forEach(h => { if (h.pnl > bestTrade) bestTrade = h.pnl; });
+
+                const avgWin = wins > 0 ? totalWins / wins : 0;
+                const avgLoss = lossCount > 0 ? totalLosses / lossCount : 0;
+                const profitFactor = totalLosses > 0 ? totalWins / totalLosses : (totalWins > 0 ? 999 : 0);
+
+                document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+                const pnlEl = document.getElementById('totalPnL');
+                pnlEl.textContent = `$${totalPnL.toFixed(2)}`;
+                pnlEl.className = `value ${totalPnL > 0 ? 'positive' : (totalPnL < 0 ? 'negative' : 'neutral')}`;
+
+                const dayEl = document.getElementById('dayPnL');
+                dayEl.textContent = `$${dayPnL.toFixed(2)}`;
+                dayEl.className = `value ${dayPnL > 0 ? 'positive' : (dayPnL < 0 ? 'negative' : 'neutral')}`;
+
+                document.getElementById('winRate').textContent = `${winRate}%`;
+                document.getElementById('openCount').textContent = openCount;
+                document.getElementById('totalTrades').textContent = totalTrades;
+                document.getElementById('bestTrade').textContent = `$${bestTrade.toFixed(2)}`;
+                document.getElementById('avgWin').textContent = `$${avgWin.toFixed(2)}`;
+                document.getElementById('avgLoss').textContent = `$${avgLoss.toFixed(2)}`;
+                document.getElementById('profitFactor').textContent = profitFactor.toFixed(2);
+            }
+
+            // ----- Render History -----
+            function renderHistory() {
+                if (!historyContainer) return;
+
+                const searchTerm = historySearch.value.toLowerCase().trim();
+                const filterType = historyFilter.value;
+
+                let filtered = tradeHistory;
+
+                if (searchTerm) {
+                    filtered = filtered.filter(h => h.ticker.toLowerCase().includes(searchTerm));
+                }
+
+                if (filterType === 'long') {
+                    filtered = filtered.filter(h => h.type === 'long');
+                } else if (filterType === 'short') {
+                    filtered = filtered.filter(h => h.type === 'short');
+                } else if (filterType === 'win') {
+                    filtered = filtered.filter(h => h.pnl > 0);
+                } else if (filterType === 'loss') {
+                    filtered = filtered.filter(h => h.pnl < 0);
+                }
+
+                if (filtered.length === 0) {
+                    historyContainer.innerHTML = '<div class="empty-state">📭 No closed trades match your filters</div>';
+                    return;
+                }
+
+                const sorted = [...filtered].reverse();
+                let html = '';
+                sorted.forEach((h, idx) => {
+                    const originalIndex = tradeHistory.indexOf(h);
+                    const pnlClass = h.pnl > 0 ? 'positive' : (h.pnl < 0 ? 'negative' : 'neutral');
+                    const typeLabel = h.type === 'long' ? 'LONG' : 'SHORT';
+                    const date = new Date(h.exitDate).toLocaleDateString();
+                    const time = new Date(h.exitDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const autoLabel = h.autoClosed ? ' ⚡Auto' : '';
+
+                    html += `
+                        <div class="history-item">
+                            <div class="h-left">
+                                <div class="h-symbol">${escapeHtml(h.ticker)} <span style="font-weight:400;color:var(--text-secondary);">${typeLabel}${autoLabel}</span></div>
+                                <div class="h-detail">${h.shares} shares · Entry $${h.entryPrice.toFixed(2)} → Exit $${h.exitPrice.toFixed(2)}</div>
+                                <div class="h-detail">${date} ${time}${h.notes ? ' · 📝 ' + escapeHtml(h.notes) : ''}</div>
+                            </div>
+                            <div class="h-actions">
+                                <span class="h-pnl ${pnlClass}">$${h.pnl.toFixed(2)}</span>
+                                <button class="btn-sm reopen" data-action="reopen" data-index="${originalIndex}">Re-open</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                historyContainer.innerHTML = html;
+
+                document.querySelectorAll('[data-action="reopen"]').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = this.getAttribute('data-index');
+                        if (idx !== null) reopenPosition(parseInt(idx, 10));
+                    });
+                });
+            }
+
+            // ----- Export Functions -----
+            // CSV-escape a field: wrap in quotes and double any embedded quotes.
+            // Previously notes were interpolated raw — a comma or `"` in a note corrupted the row.
+            function csvEscape(value) {
+                const str = String(value ?? '');
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+
+            function exportCSV() {
+                if (tradeHistory.length === 0) { alert('No trade history to export.'); return; }
+                let csv =
+                    'Ticker,Shares,Entry Price,Exit Price,Type,P&L,Entry Date,Exit Date,Notes,Auto Closed\n';
+                tradeHistory.forEach(h => {
+                    const row = [
+                        h.ticker,
+                        h.shares,
+                        h.entryPrice.toFixed(2),
+                        h.exitPrice.toFixed(2),
+                        h.type,
+                        h.pnl.toFixed(2),
+                        new Date(h.entryDate).toLocaleString(),
+                        new Date(h.exitDate).toLocaleString(),
+                        csvEscape(h.notes || ''),
+                        h.autoClosed || false,
+                    ];
+                    csv += row.join(',') + '\n';
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trades_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            function exportJSON() {
+                const data = { positions, tradeHistory, achievements, exportDate: new Date().toISOString() };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            function importBackup() {
+                fileInput.click();
+            }
+
+            // ----- Helpers -----
+            // Formats a P&L-style number with an explicit +/- sign, so SL/TP dollar
+            // consequences are scannable without relying on color alone.
+            function formatSignedCurrency(val) {
+                return (val >= 0 ? '+$' : '-$') + Math.abs(val).toFixed(2);
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                return String(text).replace(/[&<>"]/g, function(m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function updateApiStatus(status, text) {
+                apiStatus.textContent = `API: ${text}`;
+                apiStatus.className = `api-status ${status}`;
+                // Drive the "LIVE" header indicator off the same signal instead of a static label.
+                if (liveIndicator) {
+                    if (status === 'offline') {
+                        liveIndicator.textContent = '● OFFLINE';
+                        liveIndicator.classList.add('offline');
+                    } else {
+                        liveIndicator.textContent = status === 'partial' ? '● PARTIAL' : '● LIVE';
+                        liveIndicator.classList.remove('offline');
+                    }
+                }
+            }
+
+            function updateApiCalls() {
+                apiCalls.textContent = `📊 ${apiCallCount}`;
+            }
+
+            // ----- Alerts -----
+            function checkAlerts() {
+                if (!alertContainer) return;
+                let alerts = [];
+                positions.forEach(pos => {
+                    const currentPrice = currentPrices[pos.ticker] || pos.price;
+                    const sl = Number(pos.stopLoss) || 0;
+                    const tp = Number(pos.takeProfit) || 0;
+
+                    if (sl > 0 && pos.type === 'long' && currentPrice <= sl) {
+                        alerts.push(`🔴 ${pos.ticker} hit STOP LOSS at $${currentPrice.toFixed(2)}`);
+                    }
+                    if (sl > 0 && pos.type === 'short' && currentPrice >= sl) {
+                        alerts.push(`🔴 ${pos.ticker} hit STOP LOSS at $${currentPrice.toFixed(2)}`);
+                    }
+                    if (tp > 0 && pos.type === 'long' && currentPrice >= tp) {
+                        alerts.push(`🟢 ${pos.ticker} hit TAKE PROFIT at $${currentPrice.toFixed(2)}`);
+                    }
+                    if (tp > 0 && pos.type === 'short' && currentPrice <= tp) {
+                        alerts.push(`🟢 ${pos.ticker} hit TAKE PROFIT at $${currentPrice.toFixed(2)}`);
+                    }
+                });
+
+                if (alerts.length > 0) {
+                    alertContainer.innerHTML = alerts.map(a => `<div class="alert-box">${a}</div>`).join('');
+                } else {
+                    alertContainer.innerHTML = '<div class="alert-box warning">📊 No price alerts triggered</div>';
+                }
+            }
+
+            // ----- Tab Switching -----
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab).classList.add('active');
+                    if (this.dataset.tab === 'tab-portfolio') {
+                        updateDashboard();
+                        if (chartTickerSelect.value) {
+                            setTimeout(() => {
+                                loadChartData(chartTickerSelect.value, parseInt(chartRangeSelect
+                                .value));
+                            }, 100);
+                        }
+                    }
+                    if (this.dataset.tab === 'tab-history') renderHistory();
+                });
+            });
+
+            // ----- Event Listeners -----
+            function handleTrade(type) {
+                const ticker = tickerInput.value.trim();
+                const shares = sharesInput.value;
+                const price = priceInput.value;
+                const sl = slInput.value;
+                const tp = tpInput.value;
+                const notes = notesInput.value.trim();
+                addPosition(ticker, shares, price, type, sl, tp, notes);
+            }
+
+            // ----- Resize handler -----
+            function handleResize() {
+                if (chartTickerSelect.value && document.getElementById('tab-portfolio').classList.contains('active')) {
+                    loadChartData(chartTickerSelect.value, parseInt(chartRangeSelect.value));
+                }
+            }
+
+            // ----- Clear All Positions -----
+            async function clearAllPositions() {
+                if (positions.length === 0) return;
+                const confirmed = await showModal('Close All Positions?',
+                    'This will close ALL open positions and add them to history.', 'Close All', 'Cancel', true);
+                if (!confirmed) return;
+
+                positions.forEach(pos => {
+                    const currentPrice = currentPrices[pos.ticker] || pos.price;
+                    tradeHistory.push(buildHistoryEntry(pos, currentPrice, false));
+                });
+                positions = [];
+                saveData();
+                render();
+                updateDashboard();
+                renderHistory();
+                updateChartTickerOptions();
+                checkAchievements();
+            }
+
+            // ----- Clear History -----
+            async function clearHistory() {
+                if (tradeHistory.length === 0) return;
+                const confirmed = await showModal('Clear All History?',
+                    'This will permanently delete all trade history.', 'Clear All', 'Cancel', true);
+                if (!confirmed) return;
+                tradeHistory = [];
+                saveData();
+                renderHistory();
+            }
+
+            // ----- Init -----
+            async function init() {
+                loadTheme();
+                loadData();
+                render();
+                updateDashboard();
+                renderHistory();
+                updateApiStatus('online', 'Ready');
+
+                if (!getApiKey() || !getApiSecret()) {
+                    updateApiStatus('offline', 'No API keys set');
+                    showAlert('No Alpaca API credentials saved yet — go to the Export tab → API Credentials to add them.');
+                }
+
+                await requestNotificationPermission();
+
+                try {
+                    await refreshAllPrices();
+                } catch (e) {
+                    console.log('Initial price fetch error:', e);
+                }
+
+                tickerInput.addEventListener('input', (e) => {
+                    const pos = e.target.selectionStart;
+                    e.target.value = e.target.value.toUpperCase();
+                    e.target.setSelectionRange(pos, pos);
+                });
+                longBtn.addEventListener('click', (e) => { e.preventDefault();
+                    handleTrade('long'); });
+                shortBtn.addEventListener('click', (e) => { e.preventDefault();
+                    handleTrade('short'); });
+                clearFieldsBtn.addEventListener('click', (e) => { e.preventDefault();
+                    clearInputFields(); });
+                refreshBtn.addEventListener('click', (e) => { e.preventDefault();
+                    refreshAllPrices(); });
+                themeToggle.addEventListener('click', toggleTheme);
+
+                clearHistoryBtn.addEventListener('click', clearHistory);
+
+                historySearch.addEventListener('input', renderHistory);
+                historyFilter.addEventListener('change', renderHistory);
+                clearSearchBtn.addEventListener('click', () => {
+                    historySearch.value = '';
+                    historyFilter.value = 'all';
+                    renderHistory();
+                });
+
+                document.getElementById('exportCSV').addEventListener('click', exportCSV);
+                document.getElementById('exportJSON').addEventListener('click', exportJSON);
+                document.getElementById('importBackup').addEventListener('click', importBackup);
+
+                const apiKeyInput = document.getElementById('apiKeyInput');
+                const apiSecretInput = document.getElementById('apiSecretInput');
+                apiKeyInput.value = getApiKey();
+                // Secret field stays blank even if one is stored — avoids displaying it
+                // back in plain text on every load; re-enter to change it.
+                document.getElementById('saveCredsBtn').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    if (apiKeyInput.value.trim()) localStorage.setItem(CREDS_KEY_KEY, apiKeyInput.value.trim());
+                    if (apiSecretInput.value.trim()) localStorage.setItem(CREDS_SECRET_KEY, apiSecretInput.value.trim());
+                    apiSecretInput.value = '';
+                    await showModal('Saved', 'API credentials saved to this browser.', 'OK', '', false);
+                    refreshAllPrices();
+                });
+                document.getElementById('clearCredsBtn').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const confirmed = await showModal('Clear API Credentials?', 'This removes the saved key/secret from this browser.', 'Clear', 'Cancel', true);
+                    if (!confirmed) return;
+                    localStorage.removeItem(CREDS_KEY_KEY);
+                    localStorage.removeItem(CREDS_SECRET_KEY);
+                    apiKeyInput.value = '';
+                    apiSecretInput.value = '';
+                });
+
+                chartRefreshBtn.addEventListener('click', () => {
+                    if (chartTickerSelect.value) {
+                        loadChartData(chartTickerSelect.value, parseInt(chartRangeSelect.value));
+                    }
+                });
+
+                chartTickerSelect.addEventListener('change', () => {
+                    if (chartTickerSelect.value) {
+                        loadChartData(chartTickerSelect.value, parseInt(chartRangeSelect.value));
+                    }
+                });
+
+                chartRangeSelect.addEventListener('change', () => {
+                    if (chartTickerSelect.value) {
+                        loadChartData(chartTickerSelect.value, parseInt(chartRangeSelect.value));
+                    }
+                });
+
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        try {
+                            const data = JSON.parse(ev.target.result);
+                            if (data.positions && data.tradeHistory) {
+                                positions = data.positions;
+                                tradeHistory = data.tradeHistory;
+                                if (data.achievements) {
+                                    achievements = data.achievements;
+                                    saveAchievements();
+                                }
+                                saveData();
+                                render();
+                                updateDashboard();
+                                renderHistory();
+                                updateChartTickerOptions();
+                                alert('✅ Backup imported successfully!');
+                            } else {
+                                alert('❌ Invalid backup file.');
+                            }
+                        } catch (err) { alert('❌ Error reading file.'); }
+                    };
+                    reader.readAsText(file);
+                    fileInput.value = '';
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && document.activeElement === tickerInput) {
+                        sharesInput.focus();
+                        e.preventDefault();
+                    } else if (e.key === 'Enter' && document.activeElement === sharesInput) {
+                        priceInput.focus();
+                        e.preventDefault();
+                    } else if (e.key === 'Enter' && document.activeElement === priceInput) {
+                        slInput.focus();
+                        e.preventDefault();
+                    } else if (e.key === 'Enter' && document.activeElement === slInput) {
+                        tpInput.focus();
+                        e.preventDefault();
+                    } else if (e.key === 'Enter' && document.activeElement === tpInput) {
+                        notesInput.focus();
+                        e.preventDefault();
+                    }
+                });
+
+                if (!slInput.value) slInput.value = '170.00';
+                if (!tpInput.value) tpInput.value = '185.00';
+
+                let resizeTimer;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(handleResize, 250);
+                });
+
+                setInterval(refreshAllPrices, 60000);
+                setInterval(updateApiCalls, 5000);
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
