@@ -934,6 +934,32 @@
                     Stored only in this browser's local storage — never written into this file, never sent anywhere except directly to Alpaca's API. Re-enter on every new device/browser.
                 </div>
             </div>
+
+            <div class="section-title"><h3>Cross-Device Sync</h3></div>
+            <div class="trade-panel" style="margin-bottom:0;">
+                <div class="row">
+                    <label>Project ID</label>
+                    <input type="text" id="syncProjectInput" placeholder="Firebase project ID" autocomplete="off">
+                </div>
+                <div class="row">
+                    <label>API Key</label>
+                    <input type="text" id="syncApiKeyInput" placeholder="Firebase web API key" autocomplete="off">
+                </div>
+                <div class="row">
+                    <label>Sync Code</label>
+                    <input type="text" id="syncCodeInput" placeholder="a passphrase only your devices use" autocomplete="off">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn" id="saveSyncBtn" style="background:var(--btn-bg); border-color:var(--btn-border); color:var(--btn-text);">Save & Sync Now</button>
+                    <button class="btn-clear" id="clearSyncBtn" style="flex:1;">Clear Sync</button>
+                </div>
+                <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;" id="syncStatusLabel">
+                    Sync: not configured
+                </div>
+                <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">
+                    Enter the same Project ID, API Key, and Sync Code on every device to share positions/history between them. Last save wins — this overwrites, it doesn't merge. The Firestore rules behind this are open (no auth), so anyone with all three values can read/write this data; that's an acceptable trade for paper-trade journal data, not for anything sensitive.
+                </div>
+            </div>
         </div>
     </div>
 
@@ -980,6 +1006,22 @@
             const HISTORY_KEY = 'pro_trade_history_v3';
             const ACHIEVEMENTS_KEY = 'pro_achievements_v3';
             const THEME_KEY = 'pro_theme';
+
+            // Cross-device sync via Firestore's REST API directly — no SDK, just fetch().
+            // Like the Alpaca credentials, these are entered once per browser and stored
+            // only in localStorage, never in the source file.
+            const SYNC_PROJECT_KEY = 'sync_project_id';
+            const SYNC_APIKEY_KEY = 'sync_api_key';
+            const SYNC_CODE_KEY = 'sync_code';
+            const SYNC_TS_KEY = 'sync_last_ts';
+            function getSyncProjectId() { return localStorage.getItem(SYNC_PROJECT_KEY) || ''; }
+            function getSyncApiKey() { return localStorage.getItem(SYNC_APIKEY_KEY) || ''; }
+            function getSyncCode() { return localStorage.getItem(SYNC_CODE_KEY) || ''; }
+            function isSyncConfigured() { return !!(getSyncProjectId() && getSyncApiKey() && getSyncCode()); }
+            function syncDocUrl() {
+                const path = `papertrade_sync/${encodeURIComponent(getSyncCode())}`;
+                return `https://firestore.googleapis.com/v1/projects/${getSyncProjectId()}/databases/(default)/documents/${path}?key=${getSyncApiKey()}`;
+            }
 
             let positions = [];
             let tradeHistory = [];
@@ -1576,7 +1618,7 @@
             }
 
             // ----- Data Management -----
-            function loadData() {
+            async function loadData() {
                 try {
                     const raw = localStorage.getItem(STORAGE_KEY);
                     if (raw) {
@@ -1598,6 +1640,30 @@
                     }
                 } catch (_) { tradeHistory = []; }
 
+                if (isSyncConfigured()) {
+                    const localTs = parseInt(localStorage.getItem(SYNC_TS_KEY) || '0', 10);
+                    const remote = await pullFromCloud();
+                    if (remote && remote.updatedAt > localTs) {
+                        // Another device saved more recently than what this device has ever
+                        // seen — adopt it. Last-write-wins, not a merge: whichever device
+                        // saved last fully replaces the other's positions/history.
+                        dlog(`loadData: adopting remote (remote ts ${remote.updatedAt} > local ts ${localTs})`);
+                        positions = remote.positions;
+                        tradeHistory = remote.tradeHistory;
+                        localStorage.setItem(SYNC_TS_KEY, String(remote.updatedAt));
+                        try {
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+                            localStorage.setItem(HISTORY_KEY, JSON.stringify(tradeHistory));
+                        } catch (_) {}
+                    } else if (remote) {
+                        dlog(`loadData: local is current (local ts ${localTs} >= remote ts ${remote.updatedAt}) — pushing to ensure cloud matches`);
+                        pushToCloud();
+                    } else {
+                        dlog('loadData: no remote document yet — pushing current local state as the first sync');
+                        pushToCloud();
+                    }
+                }
+
                 // No seed/demo positions on first load. Hardcoded example prices (AAPL @178,
                 // TSLA @245) are guaranteed to drift arbitrarily far from the real market by
                 // the time anyone opens this file, and will misfire SL/TP the instant a live
@@ -1611,6 +1677,79 @@
                 loadAchievements();
             }
 
+            // Cloud sync — Firestore REST API directly, no SDK. Achievements deliberately
+            // excluded (per-device gamification, not worth the complexity of merging).
+            async function pushToCloud() {
+                if (!isSyncConfigured()) return;
+                try {
+                    const ts = Date.now();
+                    const body = {
+                        fields: {
+                            positions: { stringValue: JSON.stringify(positions) },
+                            tradeHistory: { stringValue: JSON.stringify(tradeHistory) },
+                            updatedAt: { integerValue: String(ts) }
+                        }
+                    };
+                    const response = await fetch(syncDocUrl(), {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        dlog(`cloud push FAILED: HTTP ${response.status} ${errText}`);
+                        updateSyncStatusLabel(false);
+                        return;
+                    }
+                    localStorage.setItem(SYNC_TS_KEY, String(ts));
+                    dlog(`cloud push OK at ts=${ts}`);
+                    updateSyncStatusLabel(true);
+                } catch (error) {
+                    console.error('cloud push error:', error);
+                    dlog(`cloud push error: ${error.message}`);
+                    updateSyncStatusLabel(false);
+                }
+            }
+
+            async function pullFromCloud() {
+                if (!isSyncConfigured()) return null;
+                try {
+                    const response = await fetch(syncDocUrl());
+                    if (response.status === 404) {
+                        dlog('cloud pull: no remote document yet');
+                        return null;
+                    }
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        dlog(`cloud pull FAILED: HTTP ${response.status} ${errText}`);
+                        return null;
+                    }
+                    const data = await response.json();
+                    const f = data.fields || {};
+                    return {
+                        positions: f.positions ? JSON.parse(f.positions.stringValue) : [],
+                        tradeHistory: f.tradeHistory ? JSON.parse(f.tradeHistory.stringValue) : [],
+                        updatedAt: f.updatedAt ? parseInt(f.updatedAt.integerValue, 10) : 0
+                    };
+                } catch (error) {
+                    console.error('cloud pull error:', error);
+                    dlog(`cloud pull error: ${error.message}`);
+                    return null;
+                }
+            }
+
+            function updateSyncStatusLabel(ok) {
+                const el = document.getElementById('syncStatusLabel');
+                if (!el) return;
+                if (!isSyncConfigured()) {
+                    el.textContent = 'Sync: not configured';
+                    el.style.color = '';
+                    return;
+                }
+                el.textContent = ok ? `Sync: ok (${new Date().toLocaleTimeString()})` : 'Sync: failed';
+                el.style.color = ok ? 'var(--color-positive)' : 'var(--color-negative)';
+            }
+
             let lastSaveOk = true;
             function saveData() {
                 try {
@@ -1619,6 +1758,7 @@
                     dlog(`saveData OK: ${positions.length} positions, ${tradeHistory.length} history entries`);
                     lastSaveOk = true;
                     updateSaveStatusLabel();
+                    pushToCloud();
                     return true;
                 } catch (error) {
                     // localStorage can throw (quota, or blocked/partitioned third-party
@@ -2317,7 +2457,7 @@
             // ----- Init -----
             async function init() {
                 loadTheme();
-                loadData();
+                await loadData();
                 render();
                 updateDashboard();
                 renderHistory();
@@ -2386,6 +2526,55 @@
                     localStorage.removeItem(CREDS_SECRET_KEY);
                     apiKeyInput.value = '';
                     apiSecretInput.value = '';
+                });
+
+                const syncProjectInput = document.getElementById('syncProjectInput');
+                const syncApiKeyInput = document.getElementById('syncApiKeyInput');
+                const syncCodeInput = document.getElementById('syncCodeInput');
+                syncProjectInput.value = getSyncProjectId();
+                syncApiKeyInput.value = getSyncApiKey();
+                syncCodeInput.value = getSyncCode();
+                updateSyncStatusLabel(true);
+                document.getElementById('saveSyncBtn').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    localStorage.setItem(SYNC_PROJECT_KEY, syncProjectInput.value.trim());
+                    localStorage.setItem(SYNC_APIKEY_KEY, syncApiKeyInput.value.trim());
+                    localStorage.setItem(SYNC_CODE_KEY, syncCodeInput.value.trim());
+                    if (!isSyncConfigured()) {
+                        await showModal('Incomplete', 'All three fields (Project ID, API Key, Sync Code) are required.', 'OK', '', false);
+                        return;
+                    }
+                    const remote = await pullFromCloud();
+                    const localTs = parseInt(localStorage.getItem(SYNC_TS_KEY) || '0', 10);
+                    if (remote && remote.updatedAt > localTs) {
+                        const confirmed = await showModal('Remote data found', 'Another device has newer data under this Sync Code. Load it here (overwrites what you see now)?', 'Load remote', 'Keep local & push', false);
+                        if (confirmed) {
+                            positions = remote.positions;
+                            tradeHistory = remote.tradeHistory;
+                            localStorage.setItem(SYNC_TS_KEY, String(remote.updatedAt));
+                            saveData();
+                            render();
+                            updateDashboard();
+                            renderHistory();
+                            updateChartTickerOptions();
+                        } else {
+                            pushToCloud();
+                        }
+                    } else {
+                        pushToCloud();
+                    }
+                });
+                document.getElementById('clearSyncBtn').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const confirmed = await showModal('Clear Sync Settings?', 'This stops syncing on this device (does not delete remote data).', 'Clear', 'Cancel', true);
+                    if (!confirmed) return;
+                    localStorage.removeItem(SYNC_PROJECT_KEY);
+                    localStorage.removeItem(SYNC_APIKEY_KEY);
+                    localStorage.removeItem(SYNC_CODE_KEY);
+                    syncProjectInput.value = '';
+                    syncApiKeyInput.value = '';
+                    syncCodeInput.value = '';
+                    updateSyncStatusLabel(true);
                 });
 
                 chartRefreshBtn.addEventListener('click', () => {
