@@ -988,8 +988,8 @@
             // the API Credentials panel (Export tab) and stored in localStorage only —
             // this file is safe to commit to a public repo because it never contains
             // a real key or secret. See getApiKey()/getApiSecret() below.
-            const CREDS_KEY_KEY = 'PKSVTUUNPSHBI6N6U3RBBOVD37';
-            const CREDS_SECRET_KEY = '2e3wQbNsRwqgjfVwqPMBtL2i9VDdGxCSDjCbtFU4vFqE';
+            const CREDS_KEY_KEY = 'alpaca_api_key';
+            const CREDS_SECRET_KEY = 'alpaca_secret_key';
             function getApiKey() { return localStorage.getItem(CREDS_KEY_KEY) || ''; }
             function getApiSecret() { return localStorage.getItem(CREDS_SECRET_KEY) || ''; }
 
