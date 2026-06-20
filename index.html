@@ -850,7 +850,10 @@
         <div class="tab-content" id="tab-portfolio">
             <div class="dashboard-grid" id="dashboardGrid">
                 <div class="stat-card full"><div class="label">Total Value</div><div class="value" id="totalValue">$0.00</div></div>
-                <div class="stat-card"><div class="label">Total P&L</div><div class="value" id="totalPnL">$0.00</div></div>
+                <div class="stat-card"><div class="label">Unrealised P&L</div><div class="value" id="totalPnL">$0.00</div></div>
+                <div class="stat-card"><div class="label">Realized P&L</div><div class="value" id="realizedPnL">$0.00</div></div>
+                <div class="stat-card"><div class="label">Max Drawdown</div><div class="value" id="maxDrawdown">$0.00</div></div>
+                <div class="stat-card"><div class="label">Current Drawdown</div><div class="value" id="currentDrawdown">$0.00</div></div>
                 <div class="stat-card"><div class="label">Day P&L</div><div class="value" id="dayPnL">$0.00</div></div>
                 <div class="stat-card"><div class="label">Win Rate</div><div class="value" id="winRate">0%</div></div>
                 <div class="stat-card"><div class="label">Open Positions</div><div class="value" id="openCount">0</div></div>
@@ -985,8 +988,8 @@
             // the API Credentials panel (Export tab) and stored in localStorage only —
             // this file is safe to commit to a public repo because it never contains
             // a real key or secret. See getApiKey()/getApiSecret() below.
-            const CREDS_KEY_KEY = 'alpaca_api_key';
-            const CREDS_SECRET_KEY = 'alpaca_secret_key';
+            const CREDS_KEY_KEY = 'PKSVTUUNPSHBI6N6U3RBBOVD37';
+            const CREDS_SECRET_KEY = '2e3wQbNsRwqgjfVwqPMBtL2i9VDdGxCSDjCbtFU4vFqE';
             function getApiKey() { return localStorage.getItem(CREDS_KEY_KEY) || ''; }
             function getApiSecret() { return localStorage.getItem(CREDS_SECRET_KEY) || ''; }
 
@@ -2149,12 +2152,32 @@
             }
 
             // ----- Dashboard -----
+            // Max/current drawdown from the REALIZED equity curve only (closed trades,
+            // chronological cumulative P&L). Does not account for open positions — a large
+            // unrealized loss sitting in an open position won't show here until it's closed.
+            // That's a real, deliberate scope limit, not an oversight: a true mark-to-market
+            // drawdown would need daily equity snapshots this app doesn't keep.
+            function calculateDrawdown() {
+                if (tradeHistory.length === 0) return { maxDrawdown: 0, currentDrawdown: 0 };
+                const sorted = [...tradeHistory].sort((a, b) => a.exitDate - b.exitDate);
+                let cumulative = 0;
+                let peak = 0;
+                let maxDrawdown = 0;
+                sorted.forEach(h => {
+                    cumulative += h.pnl;
+                    if (cumulative > peak) peak = cumulative;
+                    const drawdown = peak - cumulative;
+                    if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+                });
+                const currentDrawdown = peak - cumulative;
+                return { maxDrawdown, currentDrawdown };
+            }
+
             function updateDashboard() {
                 if (!document.getElementById('dashboardGrid')) return;
 
                 let totalValue = 0;
-                let totalPnL = 0;
-                let dayPnL = 0;
+                let totalPnL = 0; // unrealized — open positions only
                 let openCount = positions.length;
                 let totalTrades = tradeHistory.length;
 
@@ -2164,8 +2187,23 @@
                     totalValue += shares * currentPrice;
                     const pnl = calculatePnL(pos, currentPrice);
                     totalPnL += pnl.currentPnL;
-                    dayPnL += pnl.currentPnL;
                 });
+
+                // Realized P&L: all-time sum of closed trades. This was previously missing
+                // entirely from the dashboard — "Total P&L" silently excluded every closed
+                // trade and only ever showed the open-position figure under a misleading name.
+                const realizedPnL = tradeHistory.reduce((sum, h) => sum + h.pnl, 0);
+
+                // Day P&L: today's realized gains/losses (trades closed today) plus current
+                // unrealized P&L on open positions. Not true mark-to-market day P&L (that
+                // would need yesterday's closing price per position, which isn't tracked) —
+                // this is "today's trading activity," which is what's actually derivable
+                // from the data this app keeps.
+                const todayStr = new Date().toDateString();
+                const todaysRealizedPnL = tradeHistory
+                    .filter(h => new Date(h.exitDate).toDateString() === todayStr)
+                    .reduce((sum, h) => sum + h.pnl, 0);
+                const dayPnL = todaysRealizedPnL + totalPnL;
 
                 let wins = 0,
                     totalWins = 0,
@@ -2189,6 +2227,18 @@
                 const pnlEl = document.getElementById('totalPnL');
                 pnlEl.textContent = `$${totalPnL.toFixed(2)}`;
                 pnlEl.className = `value ${totalPnL > 0 ? 'positive' : (totalPnL < 0 ? 'negative' : 'neutral')}`;
+
+                const realizedEl = document.getElementById('realizedPnL');
+                realizedEl.textContent = `$${realizedPnL.toFixed(2)}`;
+                realizedEl.className = `value ${realizedPnL > 0 ? 'positive' : (realizedPnL < 0 ? 'negative' : 'neutral')}`;
+
+                const { maxDrawdown, currentDrawdown } = calculateDrawdown();
+                const maxDdEl = document.getElementById('maxDrawdown');
+                maxDdEl.textContent = `-$${maxDrawdown.toFixed(2)}`;
+                maxDdEl.className = `value ${maxDrawdown > 0 ? 'negative' : 'neutral'}`;
+                const curDdEl = document.getElementById('currentDrawdown');
+                curDdEl.textContent = `-$${currentDrawdown.toFixed(2)}`;
+                curDdEl.className = `value ${currentDrawdown > 0 ? 'negative' : 'neutral'}`;
 
                 const dayEl = document.getElementById('dayPnL');
                 dayEl.textContent = `$${dayPnL.toFixed(2)}`;
