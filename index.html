@@ -430,6 +430,20 @@
         }
 
         .position-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+        .pagination-bar { display: flex; justify-content: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .page-btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            min-width: 32px;
+            transition: background 0.15s, color 0.3s, border-color 0.3s;
+        }
+        .page-btn:active { background: var(--hover-bg); }
+        .page-btn.active { background: var(--color-accent); color: white; border-color: var(--color-accent); }
         .position-item {
             background: var(--bg-card);
             padding: 10px 14px;
@@ -845,6 +859,7 @@
             <div id="positionContainer" class="position-list">
                 <div class="empty-state">✨ no positions — add a trade</div>
             </div>
+            <div id="positionPagination" class="pagination-bar"></div>
         </div>
 
         <div class="tab-content" id="tab-portfolio">
@@ -1027,6 +1042,8 @@
             }
 
             let positions = [];
+            const POSITIONS_PER_PAGE = 4;
+            let currentPositionPage = 1;
             let tradeHistory = [];
             let currentPrices = {};
             let apiCallCount = 0;
@@ -1861,6 +1878,7 @@
                 };
 
                 positions.push(newPos);
+                currentPositionPage = Math.ceil(positions.length / POSITIONS_PER_PAGE);
                 if (!currentPrices[hist.ticker]) {
                     currentPrices[hist.ticker] = hist.entryPrice;
                 }
@@ -1875,16 +1893,47 @@
             }
 
             // ----- Render Positions -----
+            function renderPagination(totalPages) {
+                const container = document.getElementById('positionPagination');
+                if (!container) return;
+                if (!totalPages || totalPages <= 1) { container.innerHTML = ''; return; }
+                let html = '';
+                for (let p = 1; p <= totalPages; p++) {
+                    html += `<button class="page-btn ${p === currentPositionPage ? 'active' : ''}" data-page="${p}">${p}</button>`;
+                }
+                container.innerHTML = html;
+                container.querySelectorAll('.page-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        currentPositionPage = parseInt(this.getAttribute('data-page'), 10);
+                        render();
+                    });
+                });
+            }
+
             function render() {
                 if (!positionContainer) return;
                 if (positions.length === 0) {
                     positionContainer.innerHTML = `<div class="empty-state">📭 no open positions</div>`;
                     countBadge.textContent = '0';
+                    renderPagination(0);
                     return;
                 }
 
+                const totalPages = Math.max(1, Math.ceil(positions.length / POSITIONS_PER_PAGE));
+                if (currentPositionPage > totalPages) currentPositionPage = totalPages;
+                if (currentPositionPage < 1) currentPositionPage = 1;
+                const startIdx = (currentPositionPage - 1) * POSITIONS_PER_PAGE;
+                // pageIndices holds ORIGINAL positions[] indices for this page — cards must
+                // keep referencing the real array index, not their position within the page,
+                // or edit/close/delete would act on the wrong position after page 1.
+                const pageIndices = [];
+                for (let i = startIdx; i < Math.min(startIdx + POSITIONS_PER_PAGE, positions.length); i++) {
+                    pageIndices.push(i);
+                }
+
                 let html = '';
-                positions.forEach((pos, index) => {
+                pageIndices.forEach((index) => {
+                    const pos = positions[index];
                     const typeClass = pos.type === 'long' ? 'long' : 'short';
                     const typeLabel = pos.type === 'long' ? 'LONG' : 'SHORT';
                     const shares = Number(pos.shares) || 0;
@@ -1956,6 +2005,7 @@
 
                 positionContainer.innerHTML = html;
                 countBadge.textContent = positions.length;
+                renderPagination(totalPages);
 
                 document.querySelectorAll('[data-action="edit"]').forEach(btn => {
                     btn.addEventListener('click', function(e) {
@@ -2107,6 +2157,7 @@
                     notes: notes || '',
                 };
                 positions.push(newPos);
+                currentPositionPage = Math.ceil(positions.length / POSITIONS_PER_PAGE);
                 dlog(`position added: ${tickerUpper} ${type} entry=${priceNum} SL=${slNum} TP=${tpNum}`);
                 if (!currentPrices[tickerUpper]) {
                     currentPrices[tickerUpper] = priceNum;
