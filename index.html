@@ -1623,8 +1623,8 @@
                         // Report both if a gap blew through both levels in one poll cycle —
                         // previously only the last-checked condition (TP) was recorded.
                         const reasons = [];
-                        if (slHit) reasons.push(`Stop Loss hit at $${currentPrice.toFixed(2)}`);
-                        if (tpHit) reasons.push(`Take Profit hit at $${currentPrice.toFixed(2)}`);
+                        if (slHit) reasons.push(`Stop Loss hit at $${formatCurrency(currentPrice)}`);
+                        if (tpHit) reasons.push(`Take Profit hit at $${formatCurrency(currentPrice)}`);
                         const reason = reasons.join(' AND ');
 
                         const entry = buildHistoryEntry(pos, currentPrice, true);
@@ -1632,8 +1632,8 @@
                         toRemove.push(index);
                         const emoji = entry.pnl > 0 ? '🟢' : '🔴';
                         sendNotification(`${emoji} ${pos.ticker} Auto-Closed`,
-                            `${reason}\nP&L: $${entry.pnl.toFixed(2)}`);
-                        showAlert(`${pos.ticker} auto-closed: ${reason} (P&L: $${entry.pnl.toFixed(2)})`);
+                            `${reason}\nP&L: ${formatSignedCurrency(entry.pnl)}`);
+                        showAlert(`${pos.ticker} auto-closed: ${reason} (P&L: ${formatSignedCurrency(entry.pnl)})`);
                         closed = true;
                     }
                 });
@@ -2211,7 +2211,7 @@
                             const { slHit, tpHit } = evaluateSlTpHit(newPos, result.price);
                             dlog(`live price for ${tickerUpper} = ${result.price} vs entry=${priceNum} SL=${slNum} TP=${tpNum} -> slHit=${slHit} tpHit=${tpHit}`);
                             if (slHit || tpHit) {
-                                showAlert(`${tickerUpper} live price ($${result.price.toFixed(2)}) is already past your ${slHit ? 'Stop Loss' : 'Take Profit'} — review before it auto-closes on next refresh.`);
+                                showAlert(`${tickerUpper} live price ($${formatCurrency(result.price)}) is already past your ${slHit ? 'Stop Loss' : 'Take Profit'} — review before it auto-closes on next refresh.`);
                             }
                             render();
                             updateDashboard();
@@ -2510,16 +2510,16 @@
                     const tp = Number(pos.takeProfit) || 0;
 
                     if (sl > 0 && pos.type === 'long' && currentPrice <= sl) {
-                        alerts.push(`🔴 ${pos.ticker} hit STOP LOSS at $${currentPrice.toFixed(2)}`);
+                        alerts.push(`🔴 ${pos.ticker} hit STOP LOSS at $${formatCurrency(currentPrice)}`);
                     }
                     if (sl > 0 && pos.type === 'short' && currentPrice >= sl) {
-                        alerts.push(`🔴 ${pos.ticker} hit STOP LOSS at $${currentPrice.toFixed(2)}`);
+                        alerts.push(`🔴 ${pos.ticker} hit STOP LOSS at $${formatCurrency(currentPrice)}`);
                     }
                     if (tp > 0 && pos.type === 'long' && currentPrice >= tp) {
-                        alerts.push(`🟢 ${pos.ticker} hit TAKE PROFIT at $${currentPrice.toFixed(2)}`);
+                        alerts.push(`🟢 ${pos.ticker} hit TAKE PROFIT at $${formatCurrency(currentPrice)}`);
                     }
                     if (tp > 0 && pos.type === 'short' && currentPrice <= tp) {
-                        alerts.push(`🟢 ${pos.ticker} hit TAKE PROFIT at $${currentPrice.toFixed(2)}`);
+                        alerts.push(`🟢 ${pos.ticker} hit TAKE PROFIT at $${formatCurrency(currentPrice)}`);
                     }
                 });
 
