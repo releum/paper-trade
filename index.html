@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>📊 Pro Paper Trade · Alpaca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ===== THEMES ===== */
         :root {
+            --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
             --bg-primary: #0b0e14;
             --bg-secondary: #141a24;
             --bg-card: #111822;
@@ -134,7 +138,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             padding: 12px 8px 40px;
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s;
@@ -496,11 +500,11 @@
             margin-top: 2px;
             transition: color 0.3s;
         }
-        .pos-detail span { background: var(--bg-input); padding: 0 6px 0 0; transition: background 0.3s; }
-        .sl-tp { font-weight: 500; background: var(--bg-input); padding: 0 6px; transition: background 0.3s; }
+        .pos-detail span { background: var(--bg-input); padding: 0 6px 0 0; transition: background 0.3s; font-family: var(--font-mono); }
+        .sl-tp { font-weight: 500; background: var(--bg-input); padding: 0 6px; transition: background 0.3s; font-family: var(--font-mono); }
         .sl { color: var(--color-sl); }
         .tp { color: var(--color-tp); }
-        .current-price { color: var(--text-primary); font-weight: 600; transition: color 0.3s; }
+        .current-price { color: var(--text-primary); font-weight: 600; transition: color 0.3s; font-family: var(--font-mono); }
         .current-price.loading { color: var(--text-muted); animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
@@ -508,6 +512,7 @@
             font-weight: 600;
             padding: 0 4px;
             font-size: 0.75rem;
+            font-family: var(--font-mono);
         }
         .pnl.positive { color: var(--color-positive); }
         .pnl.negative { color: var(--color-negative); }
@@ -552,6 +557,7 @@
             color: var(--text-primary);
             margin-top: 2px;
             transition: color 0.3s;
+            font-family: var(--font-mono);
         }
         .stat-card .value.positive { color: var(--color-positive); }
         .stat-card .value.negative { color: var(--color-negative); }
@@ -579,8 +585,9 @@
             color: var(--text-secondary);
             font-size: 0.65rem;
             transition: color 0.3s;
+            font-family: var(--font-mono);
         }
-        .history-item .h-pnl { font-weight: 600; }
+        .history-item .h-pnl { font-weight: 600; font-family: var(--font-mono); }
         .history-item .h-pnl.positive { color: var(--color-positive); }
         .history-item .h-pnl.negative { color: var(--color-negative); }
         .history-item .h-actions { display: flex; gap: 4px; margin-left: 8px; flex-wrap: wrap; }
@@ -801,6 +808,7 @@
             .modal-box { max-width: 300px; padding: 18px 16px 16px; }
         }
 
+        input[type="number"] { font-family: var(--font-mono); }
         input[type="number"]::-webkit-inner-spin-button { opacity: 0.5; }
         input, textarea { background: var(--bg-input); }
     </style>
@@ -1479,7 +1487,7 @@
 
                 if (!data || data.length === 0) {
                     ctx.fillStyle = textColor;
-                    ctx.font = '12px system-ui';
+                    ctx.font = '12px IBM Plex Mono, monospace';
                     ctx.textAlign = 'center';
                     ctx.fillText('No data available', width / 2, height / 2);
                     return;
@@ -1500,7 +1508,7 @@
                     ctx.stroke();
                     const priceVal = max - (range * i / 4);
                     ctx.fillStyle = textColor;
-                    ctx.font = '8px system-ui';
+                    ctx.font = '8px IBM Plex Mono, monospace';
                     ctx.textAlign = 'right';
                     ctx.fillText(priceVal.toFixed(2), padding.left - 4, y + 3);
                 }
@@ -1528,7 +1536,7 @@
                 // Calendar-aware x-axis labels (date, not bar index) so weekend/holiday
                 // gaps in the underlying daily bars aren't implied as consecutive days.
                 ctx.fillStyle = textColor;
-                ctx.font = '8px system-ui';
+                ctx.font = '8px IBM Plex Mono, monospace';
                 ctx.textAlign = 'center';
                 const stepLabels = Math.max(1, Math.floor(data.length / 6));
                 data.forEach((d, i) => {
@@ -1546,7 +1554,7 @@
                 });
 
                 ctx.fillStyle = textColor;
-                ctx.font = '10px system-ui';
+                ctx.font = '10px IBM Plex Mono, monospace';
                 ctx.textAlign = 'center';
                 ctx.fillText(`${ticker} - ${data.length} Day Chart`, width / 2, 14);
             }
