@@ -520,7 +520,7 @@
         .pnl.neutral { color: var(--text-secondary); }
 
         .pos-actions { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-        .pos-actions .btn-sm { padding: 6px 4px; font-size: 0.65rem; width: 50px; text-align: center; }
+        .pos-actions .btn-sm { padding: 6px 2px; font-size: 0.65rem; flex: 0 0 50px; min-width: 0; width: 50px; text-align: center; white-space: nowrap; overflow: hidden; }
         .details-toggle {
             background: none;
             border: none;
@@ -534,6 +534,27 @@
             font-family: 'IBM Plex Sans', system-ui, sans-serif;
         }
         .details-toggle:active { opacity: 0.7; }
+        .pos-pnl-box {
+            margin-top: 4px;
+            background: var(--bg-input);
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+        }
+        .pos-pnl-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .pos-pnl-value {
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            margin-top: 2px;
+        }
+        .pos-pnl-value.positive { color: var(--color-positive); }
+        .pos-pnl-value.negative { color: var(--color-negative); }
+        .pos-pnl-value.neutral { color: var(--text-secondary); }
 
         .empty-state {
             text-align: center;
@@ -2034,8 +2055,9 @@
                                     <span class="${priceClass}">$${priceDisplay}</span>
                                     ${pos.notes ? '<span title="Has notes">📝</span>' : ''}
                                 </div>
-                                <div class="pos-detail" style="margin-top:4px; font-size:0.8rem; font-weight:600; background:var(--bg-input); padding:5px 8px; border:1px solid var(--border-color);">
-                                    <span class="pnl ${pnlClass}">Unrealised P&L: ${currentPnLStr}</span>
+                                <div class="pos-pnl-box">
+                                    <div class="pos-pnl-label">Unrealised P&L</div>
+                                    <div class="pos-pnl-value ${pnlClass}">${currentPnLStr}</div>
                                 </div>
                                 <button class="details-toggle" data-action="toggle-details" data-id="${pos.id}">${isExpanded ? '▴ Hide details' : '▾ Details'}</button>
                                 ${isExpanded ? `
