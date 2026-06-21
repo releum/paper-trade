@@ -520,7 +520,19 @@
         .pnl.neutral { color: var(--text-secondary); }
 
         .pos-actions { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-        .pos-actions .btn-sm { padding: 6px 2px; font-size: 0.65rem; flex: 0 0 50px; min-width: 0; width: 50px; text-align: center; white-space: nowrap; overflow: hidden; }
+        .pos-actions .btn-sm {
+            padding: 0;
+            font-size: 0.65rem;
+            flex: 0 0 50px;
+            min-width: 0;
+            width: 50px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+        }
         .details-toggle {
             background: none;
             border: none;
@@ -534,11 +546,16 @@
             font-family: 'IBM Plex Sans', system-ui, sans-serif;
         }
         .details-toggle:active { opacity: 0.7; }
+        .pos-notes-icon { font-size: 0.8rem; margin-top: 4px; }
         .pos-pnl-box {
             margin-top: 4px;
             background: var(--bg-input);
             padding: 5px 8px;
             border: 1px solid var(--border-color);
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            white-space: nowrap;
         }
         .pos-pnl-label {
             font-size: 0.65rem;
@@ -550,7 +567,6 @@
             font-size: 0.95rem;
             font-weight: 700;
             font-family: var(--font-mono);
-            margin-top: 2px;
         }
         .pos-pnl-value.positive { color: var(--color-positive); }
         .pos-pnl-value.negative { color: var(--color-negative); }
@@ -1668,8 +1684,8 @@
                         toRemove.push(index);
                         const emoji = entry.pnl > 0 ? '🟢' : '🔴';
                         sendNotification(`${emoji} ${pos.ticker} Auto-Closed`,
-                            `${reason}\nP&L: ${formatSignedCurrency(entry.pnl)}`);
-                        showAlert(`${pos.ticker} auto-closed: ${reason} (P&L: ${formatSignedCurrency(entry.pnl)})`);
+                            `${reason}\nP&L: ${formatSignedCurrencyNoDecimals(entry.pnl)}`);
+                        showAlert(`${pos.ticker} auto-closed: ${reason} (P&L: ${formatSignedCurrencyNoDecimals(entry.pnl)})`);
                         closed = true;
                     }
                 });
@@ -2019,18 +2035,18 @@
                     const hasRealPrice = currentPrices[pos.ticker] !== undefined;
                     const pnl = calculatePnL(pos, currentPrice);
 
-                    const totalValue = formatCurrency(shares * currentPrice);
+                    const totalValue = formatCurrencyNoDecimals(shares * currentPrice);
                     // SL/TP price paired with its dollar consequence right next to it,
                     // instead of the price living in one row and the $ amount in a
                     // separate box further down the card.
                     const slDisplay = sl > 0
-                        ? `SL ${formatCurrency(sl)}${pnl.slPnL !== null ? ' (' + formatSignedCurrency(pnl.slPnL) + ')' : ''}`
+                        ? `SL ${formatCurrencyNoDecimals(sl)}${pnl.slPnL !== null ? ' (' + formatSignedCurrencyNoDecimals(pnl.slPnL) + ')' : ''}`
                         : '—';
                     const tpDisplay = tp > 0
-                        ? `TP ${formatCurrency(tp)}${pnl.tpPnL !== null ? ' (' + formatSignedCurrency(pnl.tpPnL) + ')' : ''}`
+                        ? `TP ${formatCurrencyNoDecimals(tp)}${pnl.tpPnL !== null ? ' (' + formatSignedCurrencyNoDecimals(pnl.tpPnL) + ')' : ''}`
                         : '—';
 
-                    const currentPnLStr = formatSignedCurrency(pnl.currentPnL);
+                    const currentPnLStr = formatSignedCurrencyNoDecimals(pnl.currentPnL);
                     const pnlClass = pnl.currentPnL > 0 ? 'positive' : (pnl.currentPnL < 0 ? 'negative' : 'neutral');
                     const rrDisplay = pnl.rrRatio !== null ? `R:R ${pnl.rrRatio.toFixed(2)}` : '';
 
@@ -2053,11 +2069,11 @@
                                     ${escapeHtml(pos.ticker || '???')}${hitAlert}
                                     <span class="type-badge ${typeClass}">${typeLabel}</span>
                                     <span class="${priceClass}">$${priceDisplay}</span>
-                                    ${pos.notes ? '<span title="Has notes">📝</span>' : ''}
                                 </div>
+                                ${pos.notes ? '<div class="pos-notes-icon" title="Has notes">📝</div>' : ''}
                                 <div class="pos-pnl-box">
-                                    <div class="pos-pnl-label">Unrealised P&L</div>
-                                    <div class="pos-pnl-value ${pnlClass}">${currentPnLStr}</div>
+                                    <span class="pos-pnl-label">UNREALISED P&L</span>
+                                    <span class="pos-pnl-value ${pnlClass}">${currentPnLStr}</span>
                                 </div>
                                 <button class="details-toggle" data-action="toggle-details" data-id="${pos.id}">${isExpanded ? '▴ Hide details' : '▾ Details'}</button>
                                 ${isExpanded ? `
@@ -2363,33 +2379,33 @@
                 const avgLoss = lossCount > 0 ? totalLosses / lossCount : 0;
                 const profitFactor = totalLosses > 0 ? totalWins / totalLosses : (totalWins > 0 ? 999 : 0);
 
-                document.getElementById('totalValue').textContent = `$${formatCurrency(totalValue)}`;
+                document.getElementById('totalValue').textContent = `$${formatCurrencyNoDecimals(totalValue)}`;
                 const pnlEl = document.getElementById('totalPnL');
-                pnlEl.textContent = `$${formatCurrency(totalPnL)}`;
+                pnlEl.textContent = `$${formatCurrencyNoDecimals(totalPnL)}`;
                 pnlEl.className = `value ${totalPnL > 0 ? 'positive' : (totalPnL < 0 ? 'negative' : 'neutral')}`;
 
                 const realizedEl = document.getElementById('realizedPnL');
-                realizedEl.textContent = `$${formatCurrency(realizedPnL)}`;
+                realizedEl.textContent = `$${formatCurrencyNoDecimals(realizedPnL)}`;
                 realizedEl.className = `value ${realizedPnL > 0 ? 'positive' : (realizedPnL < 0 ? 'negative' : 'neutral')}`;
 
                 const { maxDrawdown, currentDrawdown } = calculateDrawdown();
                 const maxDdEl = document.getElementById('maxDrawdown');
-                maxDdEl.textContent = `-$${formatCurrency(maxDrawdown)}`;
+                maxDdEl.textContent = `-$${formatCurrencyNoDecimals(maxDrawdown)}`;
                 maxDdEl.className = `value ${maxDrawdown > 0 ? 'negative' : 'neutral'}`;
                 const curDdEl = document.getElementById('currentDrawdown');
-                curDdEl.textContent = `-$${formatCurrency(currentDrawdown)}`;
+                curDdEl.textContent = `-$${formatCurrencyNoDecimals(currentDrawdown)}`;
                 curDdEl.className = `value ${currentDrawdown > 0 ? 'negative' : 'neutral'}`;
 
                 const dayEl = document.getElementById('dayPnL');
-                dayEl.textContent = `$${formatCurrency(dayPnL)}`;
+                dayEl.textContent = `$${formatCurrencyNoDecimals(dayPnL)}`;
                 dayEl.className = `value ${dayPnL > 0 ? 'positive' : (dayPnL < 0 ? 'negative' : 'neutral')}`;
 
                 document.getElementById('winRate').textContent = `${winRate}%`;
                 document.getElementById('openCount').textContent = openCount;
                 document.getElementById('totalTrades').textContent = totalTrades;
-                document.getElementById('bestTrade').textContent = `$${formatCurrency(bestTrade)}`;
-                document.getElementById('avgWin').textContent = `$${formatCurrency(avgWin)}`;
-                document.getElementById('avgLoss').textContent = `$${formatCurrency(avgLoss)}`;
+                document.getElementById('bestTrade').textContent = `$${formatCurrencyNoDecimals(bestTrade)}`;
+                document.getElementById('avgWin').textContent = `$${formatCurrencyNoDecimals(avgWin)}`;
+                document.getElementById('avgLoss').textContent = `$${formatCurrencyNoDecimals(avgLoss)}`;
                 document.getElementById('profitFactor').textContent = profitFactor.toFixed(2);
             }
 
@@ -2435,11 +2451,11 @@
                         <div class="history-item">
                             <div class="h-left">
                                 <div class="h-symbol">${escapeHtml(h.ticker)} <span style="font-weight:400;color:var(--text-secondary);">${typeLabel}${autoLabel}</span></div>
-                                <div class="h-detail">${h.shares} shares · Entry $${formatCurrency(h.entryPrice)} → Exit $${formatCurrency(h.exitPrice)}</div>
+                                <div class="h-detail">${h.shares} shares · Entry $${formatCurrency(h.entryPrice)} → Exit $${formatCurrencyNoDecimals(h.exitPrice)}</div>
                                 <div class="h-detail">${date} ${time}${h.notes ? ' · 📝 ' + escapeHtml(h.notes) : ''}</div>
                             </div>
                             <div class="h-actions">
-                                <span class="h-pnl ${pnlClass}">${formatSignedCurrency(h.pnl)}</span>
+                                <span class="h-pnl ${pnlClass}">${formatSignedCurrencyNoDecimals(h.pnl)}</span>
                                 <button class="btn-sm reopen" data-action="reopen" data-index="${originalIndex}">Re-open</button>
                             </div>
                         </div>
@@ -2518,8 +2534,19 @@
                 return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
 
+            // No-decimals variants — used for Value, SL/TP, P&L, drawdown, and dashboard
+            // stats. Current/live price and Entry price keep full cent precision via
+            // formatCurrency above; everything else rounds to whole dollars to cut clutter.
+            function formatCurrencyNoDecimals(val) {
+                return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
+
             function formatSignedCurrency(val) {
                 return (val >= 0 ? '+$' : '-$') + formatCurrency(Math.abs(val));
+            }
+
+            function formatSignedCurrencyNoDecimals(val) {
+                return (val >= 0 ? '+$' : '-$') + formatCurrencyNoDecimals(Math.abs(val));
             }
 
             function escapeHtml(text) {
