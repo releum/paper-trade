@@ -520,6 +520,19 @@
 
         .pos-actions { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
         .pos-actions .btn-sm { padding: 6px 10px; font-size: 0.65rem; min-width: 34px; }
+        .details-toggle {
+            background: none;
+            border: none;
+            color: var(--color-accent);
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-top: 2px;
+            text-align: left;
+            font-family: 'IBM Plex Sans', system-ui, sans-serif;
+        }
+        .details-toggle:active { opacity: 0.7; }
 
         .empty-state {
             text-align: center;
@@ -1064,6 +1077,7 @@
             }
 
             let positions = [];
+            let expandedPositionIds = new Set();
             const POSITIONS_PER_PAGE = 4;
             let currentPositionPage = 1;
             let tradeHistory = [];
@@ -2008,6 +2022,7 @@
 
                     const notesDisplay = pos.notes ? `<span style="font-style:italic;">📝 ${escapeHtml(pos.notes)}</span>` :
                         '';
+                    const isExpanded = expandedPositionIds.has(pos.id);
 
                     html += `
                         <div class="position-item" data-index="${index}">
@@ -2016,7 +2031,13 @@
                                     ${escapeHtml(pos.ticker || '???')}${hitAlert}
                                     <span class="type-badge ${typeClass}">${typeLabel}</span>
                                     <span class="${priceClass}">$${priceDisplay}</span>
+                                    ${pos.notes ? '<span title="Has notes">📝</span>' : ''}
                                 </div>
+                                <div class="pos-detail" style="margin-top:4px; font-size:0.8rem; font-weight:600; background:var(--bg-input); padding:5px 8px; border:1px solid var(--border-color);">
+                                    <span class="pnl ${pnlClass}">Unrealised P&L: ${currentPnLStr}</span>
+                                </div>
+                                <button class="details-toggle" data-action="toggle-details" data-id="${pos.id}">${isExpanded ? '▴ Hide details' : '▾ Details'}</button>
+                                ${isExpanded ? `
                                 <div class="pos-detail">
                                     <span>${shares} shares</span>
                                     <span>Entry $${formatCurrency(entry)}</span>
@@ -2028,9 +2049,7 @@
                                     ${rrDisplay ? `<span class="sl-tp">${rrDisplay}</span>` : ''}
                                 </div>
                                 ${notesDisplay ? `<div class="pos-detail" style="font-size:0.6rem;">${notesDisplay}</div>` : ''}
-                                <div class="pos-detail" style="margin-top:4px; font-size:0.8rem; font-weight:600; background:var(--bg-input); padding:5px 8px; border:1px solid var(--border-color);">
-                                    <span class="pnl ${pnlClass}">Unrealised P&L: ${currentPnLStr}</span>
-                                </div>
+                                ` : ''}
                             </div>
                             <div class="pos-actions">
                                 <button class="btn-sm" data-action="edit" data-index="${index}">✏️</button>
@@ -2065,6 +2084,16 @@
                         e.stopPropagation();
                         const idx = this.getAttribute('data-index');
                         if (idx !== null) deletePosition(parseInt(idx, 10));
+                    });
+                });
+
+                document.querySelectorAll('[data-action="toggle-details"]').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const id = this.getAttribute('data-id');
+                        if (expandedPositionIds.has(id)) expandedPositionIds.delete(id);
+                        else expandedPositionIds.add(id);
+                        render();
                     });
                 });
             }
