@@ -546,7 +546,6 @@
             font-family: 'IBM Plex Sans', system-ui, sans-serif;
         }
         .details-toggle:active { opacity: 0.7; }
-        .pos-notes-icon { font-size: 0.8rem; margin-top: 4px; }
         .pos-pnl-box {
             margin-top: 4px;
             background: var(--bg-input);
@@ -2070,7 +2069,6 @@
                                     <span class="type-badge ${typeClass}">${typeLabel}</span>
                                     <span class="${priceClass}">$${priceDisplay}</span>
                                 </div>
-                                ${pos.notes ? '<div class="pos-notes-icon" title="Has notes">📝</div>' : ''}
                                 <div class="pos-pnl-box">
                                     <span class="pos-pnl-label">UNREALISED P&L</span>
                                     <span class="pos-pnl-value ${pnlClass}">${currentPnLStr}</span>
