@@ -1983,22 +1983,22 @@
                     const hasRealPrice = currentPrices[pos.ticker] !== undefined;
                     const pnl = calculatePnL(pos, currentPrice);
 
-                    const totalValue = (shares * currentPrice).toFixed(2);
+                    const totalValue = formatCurrency(shares * currentPrice);
                     // SL/TP price paired with its dollar consequence right next to it,
                     // instead of the price living in one row and the $ amount in a
                     // separate box further down the card.
                     const slDisplay = sl > 0
-                        ? `SL ${sl.toFixed(2)}${pnl.slPnL !== null ? ' (' + formatSignedCurrency(pnl.slPnL) + ')' : ''}`
+                        ? `SL ${formatCurrency(sl)}${pnl.slPnL !== null ? ' (' + formatSignedCurrency(pnl.slPnL) + ')' : ''}`
                         : '—';
                     const tpDisplay = tp > 0
-                        ? `TP ${tp.toFixed(2)}${pnl.tpPnL !== null ? ' (' + formatSignedCurrency(pnl.tpPnL) + ')' : ''}`
+                        ? `TP ${formatCurrency(tp)}${pnl.tpPnL !== null ? ' (' + formatSignedCurrency(pnl.tpPnL) + ')' : ''}`
                         : '—';
 
                     const currentPnLStr = formatSignedCurrency(pnl.currentPnL);
                     const pnlClass = pnl.currentPnL > 0 ? 'positive' : (pnl.currentPnL < 0 ? 'negative' : 'neutral');
                     const rrDisplay = pnl.rrRatio !== null ? `R:R ${pnl.rrRatio.toFixed(2)}` : '';
 
-                    const priceDisplay = hasRealPrice ? currentPrice.toFixed(2) : `${currentPrice.toFixed(2)} (est)`;
+                    const priceDisplay = hasRealPrice ? formatCurrency(currentPrice) : `${formatCurrency(currentPrice)} (est)`;
                     const priceClass = hasRealPrice ? 'current-price' : 'current-price loading';
 
                     const { slHit: slHitNow, tpHit: tpHitNow } = evaluateSlTpHit(pos, currentPrice);
@@ -2019,7 +2019,7 @@
                                 </div>
                                 <div class="pos-detail">
                                     <span>${shares} shares</span>
-                                    <span>Entry $${entry.toFixed(2)}</span>
+                                    <span>Entry $${formatCurrency(entry)}</span>
                                     <span>Value $${totalValue}</span>
                                 </div>
                                 <div class="pos-detail">
@@ -2311,33 +2311,33 @@
                 const avgLoss = lossCount > 0 ? totalLosses / lossCount : 0;
                 const profitFactor = totalLosses > 0 ? totalWins / totalLosses : (totalWins > 0 ? 999 : 0);
 
-                document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+                document.getElementById('totalValue').textContent = `$${formatCurrency(totalValue)}`;
                 const pnlEl = document.getElementById('totalPnL');
-                pnlEl.textContent = `$${totalPnL.toFixed(2)}`;
+                pnlEl.textContent = `$${formatCurrency(totalPnL)}`;
                 pnlEl.className = `value ${totalPnL > 0 ? 'positive' : (totalPnL < 0 ? 'negative' : 'neutral')}`;
 
                 const realizedEl = document.getElementById('realizedPnL');
-                realizedEl.textContent = `$${realizedPnL.toFixed(2)}`;
+                realizedEl.textContent = `$${formatCurrency(realizedPnL)}`;
                 realizedEl.className = `value ${realizedPnL > 0 ? 'positive' : (realizedPnL < 0 ? 'negative' : 'neutral')}`;
 
                 const { maxDrawdown, currentDrawdown } = calculateDrawdown();
                 const maxDdEl = document.getElementById('maxDrawdown');
-                maxDdEl.textContent = `-$${maxDrawdown.toFixed(2)}`;
+                maxDdEl.textContent = `-$${formatCurrency(maxDrawdown)}`;
                 maxDdEl.className = `value ${maxDrawdown > 0 ? 'negative' : 'neutral'}`;
                 const curDdEl = document.getElementById('currentDrawdown');
-                curDdEl.textContent = `-$${currentDrawdown.toFixed(2)}`;
+                curDdEl.textContent = `-$${formatCurrency(currentDrawdown)}`;
                 curDdEl.className = `value ${currentDrawdown > 0 ? 'negative' : 'neutral'}`;
 
                 const dayEl = document.getElementById('dayPnL');
-                dayEl.textContent = `$${dayPnL.toFixed(2)}`;
+                dayEl.textContent = `$${formatCurrency(dayPnL)}`;
                 dayEl.className = `value ${dayPnL > 0 ? 'positive' : (dayPnL < 0 ? 'negative' : 'neutral')}`;
 
                 document.getElementById('winRate').textContent = `${winRate}%`;
                 document.getElementById('openCount').textContent = openCount;
                 document.getElementById('totalTrades').textContent = totalTrades;
-                document.getElementById('bestTrade').textContent = `$${bestTrade.toFixed(2)}`;
-                document.getElementById('avgWin').textContent = `$${avgWin.toFixed(2)}`;
-                document.getElementById('avgLoss').textContent = `$${avgLoss.toFixed(2)}`;
+                document.getElementById('bestTrade').textContent = `$${formatCurrency(bestTrade)}`;
+                document.getElementById('avgWin').textContent = `$${formatCurrency(avgWin)}`;
+                document.getElementById('avgLoss').textContent = `$${formatCurrency(avgLoss)}`;
                 document.getElementById('profitFactor').textContent = profitFactor.toFixed(2);
             }
 
@@ -2383,11 +2383,11 @@
                         <div class="history-item">
                             <div class="h-left">
                                 <div class="h-symbol">${escapeHtml(h.ticker)} <span style="font-weight:400;color:var(--text-secondary);">${typeLabel}${autoLabel}</span></div>
-                                <div class="h-detail">${h.shares} shares · Entry $${h.entryPrice.toFixed(2)} → Exit $${h.exitPrice.toFixed(2)}</div>
+                                <div class="h-detail">${h.shares} shares · Entry $${formatCurrency(h.entryPrice)} → Exit $${formatCurrency(h.exitPrice)}</div>
                                 <div class="h-detail">${date} ${time}${h.notes ? ' · 📝 ' + escapeHtml(h.notes) : ''}</div>
                             </div>
                             <div class="h-actions">
-                                <span class="h-pnl ${pnlClass}">$${h.pnl.toFixed(2)}</span>
+                                <span class="h-pnl ${pnlClass}">${formatSignedCurrency(h.pnl)}</span>
                                 <button class="btn-sm reopen" data-action="reopen" data-index="${originalIndex}">Re-open</button>
                             </div>
                         </div>
@@ -2459,8 +2459,15 @@
             // ----- Helpers -----
             // Formats a P&L-style number with an explicit +/- sign, so SL/TP dollar
             // consequences are scannable without relying on color alone.
+            // Comma-grouped currency formatting. Display-only — CSV export deliberately
+            // does NOT use this, since spreadsheet software can misparse comma-grouped
+            // numbers as text, breaking sum/average formulas on the exported data.
+            function formatCurrency(val) {
+                return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
             function formatSignedCurrency(val) {
-                return (val >= 0 ? '+$' : '-$') + Math.abs(val).toFixed(2);
+                return (val >= 0 ? '+$' : '-$') + formatCurrency(Math.abs(val));
             }
 
             function escapeHtml(text) {
